@@ -28,6 +28,8 @@ def admin(request):
             new_product.save()    
             
 
+
+
       return render(request, 'admin.html')
 
 def make_order(request, pk):

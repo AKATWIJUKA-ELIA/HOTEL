@@ -10,5 +10,9 @@ urlpatterns =[
     path('sign_up/', views.sign_up,name="sign_up"),
     path('sign_in/', views.sign_in,name="sign_in"),
     path('admini/', views.admin,name="admin"),
+    path('cart/', views.cart,name="cart"),
+    path('delete/',  views.delete,name="delete"),
     path('newsletter/', views.news_letter,name="news_letter"),
+    path('Add_Item_to_cart/', views.Add_Item_to_cart,name="Add_Item_to_cart"),
+    
 ]

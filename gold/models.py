@@ -53,7 +53,19 @@ class Orders(models.Model):
       Order_date = models.DateTimeField()
       Total_cost = models.DecimalField(decimal_places=2, max_digits=10)
       status = models.BooleanField(default=False)
-
+      
+class Cart(models.Model):
+      Cart_id = models.OneToOneField(to=Products, on_delete=models.CASCADE,primary_key=True)
+      # Cart_image = models.ImageField(upload_to='cart/')
+      # Cart_name = models.CharField(max_length=255)
+      # Cart_price = models.DecimalField(max_digits=10, decimal_places=2)            
+      # Cart_description = models.CharField(max_length=255)
+      quantity = models.IntegerField(default=0)
+      Cart_amount = models.IntegerField(default=0)
+      def total(self):
+            total = self.Cart_price*self.quantity
+            self.Cart_amount = total
+      
 class Payments(models.Model):
       payment_id = models.CharField(max_length=255,primary_key=True)
       customer_id = models.ForeignKey(Customers, on_delete=models.CASCADE)

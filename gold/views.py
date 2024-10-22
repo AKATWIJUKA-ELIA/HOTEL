@@ -1,20 +1,42 @@
-from django.shortcuts import render, redirect
-from gold.models import News_letter, Customers,Products,Orders
+from django.shortcuts import render, redirect,get_object_or_404
+from gold.models import News_letter, Customers,Products,Orders,Cart
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.core import serializers
+from django.http import JsonResponse
 
 
 
+# class Cart():
+#     def __init__(self, request):
+#         self.session = request.session
+#         # Get the current session key if it exists
+#         cart = self.session.get('session_key')
+#         # If the user is new, no session key! Create one!
+#         if 'session_key' not in request.session:
+#             cart = self.session['session_key'] = {}
+#         # Make sure cart is available on all pages of site
+#         self.cart = cart
+#     def add(self, product):
+#           pass
+          
 def index(request):
       
       data = serializers.serialize("python",Products.objects.all() )
       print(data)
-      context = {'data':data,} 
+      items_on_cart = Cart.objects.count()
+      context = {'data':data,
+                 'items_on_cart':items_on_cart,
+                 } 
+      
+      print(items_on_cart)
+     
       
       return  render(request, 'index.html',context=context)
 
 def admin(request):
+      data = serializers.serialize("python",Products.objects.all() )   
+      context = {'data':data,}
       if request.method == 'POST':
             product_name = request.POST['product_name']
             price = request.POST['price']
@@ -25,20 +47,18 @@ def admin(request):
             print(product_image)
             
             new_product = Products.objects.create(product_name=product_name,product_price=price,product_description=product_description,product_image=product_image)
-            new_product.save()    
-            
+            new_product.save() 
+      return render(request, 'admin.html',context=context)
 
+def delete(request):
+      if request.method == 'POST':
+            product_id = request.POST['product_id']
+            product = Products.objects.get(product_id=product_id)
+            product.delete()
+            messages.info(request,  'Product deleted successfully')
 
+      return render(request, 'delete.html')
 
-      return render(request, 'admin.html')
-
-def make_order(request, pk):
-      product = Products.objects.get(id=pk)
-      customer = Customers.objects.get(id=request.user.id)
-      order = Orders.objects.create(customer=customer,product=product)
-      order.save()
-      return redirect('index')
-      pass
 
 def service(request):
     return render(request, 'service.html')
@@ -49,9 +69,46 @@ def contacts(request):
 def about(request):
     return render(request, 'about.html')
 
-def Add_Item_to_cart(request):
+def cart(request):
+      # cart_item = serializers.serialize("python",Cart.objects.all() )
+      cart_item =  Cart.objects.all()
+      # print(sample)
+      # cart_ids =   []
+      # for item in sample:
+      #       cart_item = Cart.objects.get(pk=item.Cart_id_id)
+            # cart_ids.append(item.Cart_id_id)
+      # print(cart_ids)
+      # for cart_id in cart_ids:
+      #       cart_item = Cart.objects.get(pk=cart_id)
+     
+      # print(cart_item.Cart_id.product_name)
       
-    return render(request, 'room.html')
+      items_on_cart = Cart.objects.count()
+      context = {'items_on_cart':items_on_cart,
+                 'cart_item':cart_item,
+                 }
+      return render(request, 'cart.html', context=context)
+
+def Add_Item_to_cart(request):
+      if request.POST.get('action') == 'post':
+            product_id = int(request.POST.get('product_id'))
+            print(product_id)
+            product = Products.objects.get(product_id=product_id)
+            print(product)
+            if Cart.objects.filter(Cart_id=product_id).exists():
+                  messages.error(request, 'product already added to cart, check your cart to increase the quantity')
+                  return render(request, 'index.html')
+            else:
+                  newcart = Cart.objects.create(Cart_id=product,
+                                                # Cart_image=product.product_image,Cart_name=product.product_name,Cart_price=product.product_price,Cart_description=product.product_description
+                                                )
+                  
+                  newcart.save()
+                  print(newcart)
+                  messages.success(request, 'Product Successfully added to cart')
+                  return render(request, 'index.html')
+             
+      return render(request, 'index.html')
 
 
 # =========S I G N I N G    U P=========== #
@@ -97,7 +154,7 @@ def sign_in(request):
                   login(request,user)
                   username=user.username
                   #self.logged_in = True
-                  return render(request,'index.html', {'username': username.capitalize()})
+                  return render(request,'userpage.html', {'username': username.capitalize()})
                   
             else:
                   messages.error(request, "bad credentials")

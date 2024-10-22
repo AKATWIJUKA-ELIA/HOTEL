@@ -1,0 +1,263 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Golden View Hotel</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="golden">
+    <meta content="" name="hotel">
+
+    <!-- Favicon -->
+    <link style="border-radius: 20px;" href="{% static 'images/images.jpg' %}" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">  
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href=" {% static 'lib/animate/animate.min.css' %}" rel="stylesheet">
+    <link href="{% static 'lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
+    <link href=" {% static 'lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css'%}" rel="stylesheet" />
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href=" {% static 'css/style.css' %}" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container-fluid bg-white p-0">
+        <!-- Spinner Start -->
+        <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+        <!-- Spinner End -->
+        {% comment %} ========N AV IGATION BAR {% endcomment %}
+
+        <div class="container-fluid bg-dark px-0">
+            <div class="row gx-0 ">
+      
+                
+
+                <div class="col-lg-9">
+
+                    <nav class="navbar navbar-expand-lg bg-dark navbar-dark p-3 p-lg-0">
+                        <div style="margin-top: 0%;" class="col-2">
+                              <img src="{% static 'images/images.jpg' %}" alt="Golden view hotel logo"
+                                  height="100px" width="100px"
+                                  style="border-radius: 20px;">
+              
+                          </div>
+  
+                          <div  class="col-lg-3 bg-dark d-none d-lg-block" style="margin-left: 0%;">
+                              <a href="index.html" class="navbar-brand w-100 h-100 m-0 p-0 d-flex align-items-center ">
+                                  <h1 style="font-family: 'Times New Roman', Times, serif;" class="m-0 text-primary text-uppercase">Amazima Restaurant <br> <span> <h5 style="font-family: 'Times New Roman', Times, serif;color: gold;margin-left: 17%;">Luxury Redifined</h5> </span> </h1>
+                              </a>
+                          </div>
+                        <a href="{% url 'index' %}" class="navbar-brand d-block d-lg-none">
+                          <h1 
+               style="font-family: 'Times New Roman', Times, serif;" class="m-0 text-primary text-uppercase">Amazima Restaurant</h1>
+                        </a>
+                        <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                          <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div style="margin-left: 37%;" class="collapse navbar-collapse justify-content-between bg-transparent" id="navbarCollapse">
+                          <div class="navbar-nav mr-auto py-0">
+                            <a href="{% url 'index' %}" class="nav-item nav-link current" onclick="home">Home</a>
+                            <a id="about" href="{% url 'about' %}" class="nav-item nav-link " onclick="about">About</a>
+                            <a id="services" href="{% url 'service' %}" class="nav-item nav-link" onclick="services">Services</a>
+                            <a id="contact" href="{% url 'contact' %}" class="nav-item nav-link" onclick="contact">Contact</a>
+                            {% comment %} <a id="contact" href="" class="nav-item nav-link" onclick="contact">Sign Up</a> {% endcomment %}
+                          </div>
+                          <ul class="navbar-nav mb-lg-0">
+                            <li class="nav-item">
+                              <a href="#" class="btn btn-sm btn-light rounded py-2 px-4">Cart({{ items_on_cart }})</a>
+                            </li>
+                            <li class="nav-item">
+                              <a href="{% url 'sign_up' %}" class="btn btn-sm btn-outline-light rounded py-2 px-4">Logout</a>
+                            </li>
+                          </ul>
+                        </div>
+                      </nav>
+                </div>
+            </div>
+        </div>
+ 
+        {% if messages %}
+        {% for message in messages %}
+          <div class=" alert alert-{{message.tags }} alert-dismissible fade show" role ="alert" style= "text-align : center;background-color: rgb(171, 188, 188);">
+            <strong>
+              Info
+            </strong> {{ message }}
+            <button type ="button" class="btn-close" data-bs-dismiss="alert" aria-label="close">
+                
+            <span  aria-hidden="true"> &times;</span>
+            </button>
+          </div>
+        {% endfor %}
+      {% endif %}
+
+
+        <!-- Service Start -->
+        
+        <!-- <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                    <a class="service-item rounded" href="">
+                        <div class="service-icon bg-transparent border rounded p-1">
+                            <div class="w-100 h-100 border rounded d-flex align-items-center justify-content-center">
+                                <i class="fa fa-hotel fa-2x text-primary"></i>
+                            </div>
+                        </div>
+                        <h5 class="mb-3">Breakfast</h5>
+                        <p class="text-body mb-0">Erat ipsum justo amet duo et elitr dolor, est duo duo eos lorem sed diam stet diam sed stet lorem.</p>
+                    </a>
+                </div>
+            </div>
+             
+        </div> -->
+        
+        <div class="container-fluid">
+            <div class="row">
+
+                <div class="col-lg-8 col-md-6">
+                        <div class="container-fluid  mx-auto py-5">
+                              <div class="row">
+                              <div class="col text-center wow fadeInUp" data-wow-delay="0.1s">
+                                    <h1 class="mb-5">Your <span class="text-primary text-uppercase">Cart</span></h1>
+                              </div>
+                              </div>
+
+                              {% for instance in cart_item %}
+                               
+                              
+                              <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                              
+                                    <div class="col room-item shadow rounded overflow-hidden">
+                                          
+                                          <div class="position-relative d-flex justify-content-center align-items-center flex-column" style="height: 200px;">
+                                                <img class="img-fluid" src="{{ instance.Cart_id.product_image.url }}" width="300" height="200" alt="food">
+                                            </div>
+      
+                                          <div class="p-4 mt-2">
+                                                <div class="d-flex justify-content-between mb-3">
+                                                      <h5 class="mb-0">{{instance.Cart_id.product_name}}</h5>
+                                                      <div class="ps-2">
+                                                      <small class="fa fa-star text-primary"></small>
+                                                      <small class="fa fa-star text-primary"></small>
+                                                      <small class="fa fa-star text-primary"></small>
+                                                      <small class="fa fa-star text-primary"></small>
+                                                      <small class="fa fa-star text-primary"></small>
+                                                      </div>
+                                                </div>
+                                                <div class="d-flex mb-3">
+                                                      <small class="border-end me-3 pe-3"><i class="fa fa-bed text-primary me-2"></i>3 Bed</small>
+                                                      <small class="border-end me-3 pe-3"><i class="fa fa-bath text-primary me-2"></i>2 Bath</small>
+                                                      <small><i class="fa fa-wifi text-primary me-2"></i>Wifi</small>
+                                                </div>
+                                                <p class="text-body mb-3">{{instance.Cart_id.product_description}}</p>
+                                                <div class="d-flex justify-content-between">
+                                                      <a class="btn btn-sm btn-primary rounded py-2 px-4" href=""> Ushs: {{ instance.Cart_id.product_price }} </a>
+                                                      <button onclick="geekAlert()" type="button" class="add-cart" data-product-id={{ instance.Cart_id.product_id }}>
+                                                            <a   class="btn btn-sm btn-dark rounded py-2 px-4" href=""><svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-cart4 " viewBox="0 0 16 16">
+                                                                  <path d="M0 2.5A.5.5 0 0 1 .5 2H2a.5.5 0 0 1 .485.379L2.89 4H14.5a.5.5 0 0 1 .485.621l-1.5 6A.5.5 0 0 1 13 11H4a.5.5 0 0 1-.485-.379L1.61 3H.5a.5.5 0 0 1-.5-.5M3.14 5l.5 2H5V5zM6 5v2h2V5zm3 0v2h2V5zm3 0v2h1.36l.5-2zm1.11 3H12v2h.61zM11 8H9v2h2zM8 8H6v2h2zM5 8H3.89l.5 2H5zm0 5a1 1 0 1 0 0 2 1 1 0 0 0 0-2m-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0m9-1a1 1 0 1 0 0 2 1 1 0 0 0 0-2m-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0"/>
+                                                            </svg></a>
+                                                      </button>
+                                                </div>
+                                          </div>
+                                          
+                                    </div>
+                                    
+                              </div>
+                              {% endfor %}
+                        </div>
+
+                </div>
+
+
+
+
+
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="container">
+                        <div class="wow fadeInUp" data-wow-delay="0.1s">
+                            <a class="service-item rounded" href="">
+                                <div class="service-icon bg-transparent border rounded p-1">
+                                    <div class="w-100 h-100 border rounded d-flex align-items-center justify-content-center">
+                                        <i class="fa fa-hotel fa-2x text-primary"></i>
+                                    </div>
+                                </div>
+                                <h5 class="mb-3">Breakfast</h5>
+                                <p class="text-body mb-0">Erat ipsum justo amet duo et elitr dolor, est duo duo eos lorem sed diam stet diam sed stet lorem.</p>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+
+
+            </div>
+        </div>
+        
+        </div>
+        <!-- Service End -->
+        
+
+        {% include 'footer.html' %}
+
+
+        <!-- Back to Top -->
+        <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'lib/wow/wow.min.js' %}"></script>
+    <script src="{% static 'lib/easing/easing.min.js' %}"></script>
+    <script src="{% static 'lib/waypoints/waypoints.min.js' %}"></script>
+    <script src="{% static 'lib/counterup/counterup.min.js' %}"></script>
+    <script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
+    <script src="{% static 'lib/tempusdominus/js/moment.min.js' %}"></script>
+    <script src="{% static 'lib/tempusdominus/js/moment-timezone.min.js' %}"></script>
+    <script src="{% static 'lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js' %}"></script>
+
+    <!-- Template Javascript -->
+    <script src="{% static 'js/main.js' %}"></script>
+    <script>
+            $(document).on('click', '#add-cart', function(e){
+            e.preventDefault();
+            $.ajax({
+                  type: 'POST',
+                  url: '{% url 'Add_Item_to_cart' %}',
+                  data: {
+                        product_id: $('#add-cart').val(),
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
+                        action: 'post'
+                  },
+                  
+                  success: function (json) {
+                        console.log(json)
+                  },
+                  
+                  error: function (xhr, errmsg, err){
+
+                  }
+            });
+            
+      });
+    </script>
+</body>
+
+</html>

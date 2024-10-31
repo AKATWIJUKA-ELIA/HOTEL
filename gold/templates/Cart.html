@@ -141,23 +141,20 @@
                               {% for instance in cart_item %}
                                
                               
-                              <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                              <div class="col-lg-4 col-md-6 wow  w-75 fadeInUp" data-wow-delay="0.1s">
                               
-                                    <div class="col room-item shadow rounded overflow-hidden">
+                                    <div class="row room-item shadow rounded overflow-hidden">
                                           
-                                          <div class="position-relative d-flex justify-content-center align-items-center flex-column" style="height: 200px;">
-                                                <img class="img-fluid" src="{{ instance.Cart_id.product_image.url }}" width="300" height="200" alt="food">
-                                            </div>
+                                          <div class="col position-relative d-flex justify-content-center align-items-center flex-column" style="height: 200px;">
+                                                <img class="img-fluid" src="{{ instance.Cart_image.url }}" width="300" height="200" alt="food">
+                                          </div>
       
-                                          <div class="p-4 mt-2">
+                                          <div class=" col p-4 mt-2">
                                                 <div class="d-flex justify-content-between mb-3">
-                                                      <h5 class="mb-0">{{instance.Cart_id.product_name}}</h5>
+                                                      <h5 class="mb-0">{{instance.Cart_name}}</h5>
                                                       <div class="ps-2">
-                                                      <small class="fa fa-star text-primary"></small>
-                                                      <small class="fa fa-star text-primary"></small>
-                                                      <small class="fa fa-star text-primary"></small>
-                                                      <small class="fa fa-star text-primary"></small>
-                                                      <small class="fa fa-star text-primary"></small>
+                                                            
+                                                            Ushs: {{ instance.Cart_price }}
                                                       </div>
                                                 </div>
                                                 <div class="d-flex mb-3">
@@ -165,22 +162,31 @@
                                                       <small class="border-end me-3 pe-3"><i class="fa fa-bath text-primary me-2"></i>2 Bath</small>
                                                       <small><i class="fa fa-wifi text-primary me-2"></i>Wifi</small>
                                                 </div>
-                                                <p class="text-body mb-3">{{instance.Cart_id.product_description}}</p>
+                                                <p class="text-body mb-3">{{instance.Cart_description}}</p>
                                                 <div class="d-flex justify-content-between">
-                                                      <a class="btn btn-sm btn-primary rounded py-2 px-4" href=""> Ushs: {{ instance.Cart_id.product_price }} </a>
-                                                      <button onclick="geekAlert()" type="button" class="add-cart" data-product-id={{ instance.Cart_id.product_id }}>
-                                                            <a   class="btn btn-sm btn-dark rounded py-2 px-4" href=""><svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-cart4 " viewBox="0 0 16 16">
-                                                                  <path d="M0 2.5A.5.5 0 0 1 .5 2H2a.5.5 0 0 1 .485.379L2.89 4H14.5a.5.5 0 0 1 .485.621l-1.5 6A.5.5 0 0 1 13 11H4a.5.5 0 0 1-.485-.379L1.61 3H.5a.5.5 0 0 1-.5-.5M3.14 5l.5 2H5V5zM6 5v2h2V5zm3 0v2h2V5zm3 0v2h1.36l.5-2zm1.11 3H12v2h.61zM11 8H9v2h2zM8 8H6v2h2zM5 8H3.89l.5 2H5zm0 5a1 1 0 1 0 0 2 1 1 0 0 0 0-2m-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0m9-1a1 1 0 1 0 0 2 1 1 0 0 0 0-2m-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0"/>
-                                                            </svg></a>
-                                                      </button>
+                                                      <a class="btn btn-sm btn-danger rounded py-2 px-4" href=""> <i  class="bi bi-trash"></i> Remove </a>
+                                                      <div   class="" >
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-dash-square-fill" style="cursor: pointer;" viewBox="0 0 16 16">
+                                                                  <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm2.5 7.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1"/>
+                                                                </svg>
+                                                                {{ instance.quantity }}
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-plus-square-fill add-cart" data-cart-id={{ instance.pk }} style="cursor: pointer;" viewBox="0 0 16 16">
+                                                                  <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0"/>
+                                                                </svg>
+                                                      </div>
                                                 </div>
                                           </div>
                                           
                                     </div>
                                     
                               </div>
+
                               {% endfor %}
                         </div>
+
+                        <br>
+                        <br>
+                        <br>
 
                 </div>
 
@@ -195,10 +201,11 @@
                             <a class="service-item rounded" href="">
                                 <div class="service-icon bg-transparent border rounded p-1">
                                     <div class="w-100 h-100 border rounded d-flex align-items-center justify-content-center">
-                                        <i class="fa fa-hotel fa-2x text-primary"></i>
+                                        <i class="bi bi-cart3 text-primary"></i>
                                     </div>
                                 </div>
-                                <h5 class="mb-3">Breakfast</h5>
+                                <h5 class="mb-3">Cart Summary</h5>
+                                <h5 class="mb-3">Subtotal : {{ instance.Cart_amount }}</h5>
                                 <p class="text-body mb-0">Erat ipsum justo amet duo et elitr dolor, est duo duo eos lorem sed diam stet diam sed stet lorem.</p>
                             </a>
                         </div>
@@ -236,27 +243,30 @@
     <!-- Template Javascript -->
     <script src="{% static 'js/main.js' %}"></script>
     <script>
-            $(document).on('click', '#add-cart', function(e){
+      
+      $(document).on('click', '.add-cart', function(e) {
             e.preventDefault();
-            $.ajax({
-                  type: 'POST',
-                  url: '{% url 'Add_Item_to_cart' %}',
-                  data: {
-                        product_id: $('#add-cart').val(),
-                        csrfmiddlewaretoken: '{{ csrf_token }}',
-                        action: 'post'
-                  },
-                  
-                  success: function (json) {
-                        console.log(json)
-                  },
-                  
-                  error: function (xhr, errmsg, err){
-
-                  }
-            });
             
-      });
+            // Get the product ID from the data attribute of the clicked button
+            var cart_id = $(this).data('cart-id');
+        
+            $.ajax({
+                type: 'POST',
+                url: '{% url "increase_quantity" %}',
+                data: {
+                  cart_id: cart_id,
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    action: 'post'
+                },
+                success: function(json) {
+                    console.log(json);
+                },
+                error: function(xhr, errmsg, err) {
+                    console.error(errmsg);
+                }
+            });
+        });
+        
     </script>
 </body>
 

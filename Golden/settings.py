@@ -43,6 +43,12 @@ INSTALLED_APPS = [
     'gold',
 ]
 
+# Set session expiration time in seconds (e.g., 1 week = 7 days * 24 hours * 60 minutes * 60 seconds)
+SESSION_COOKIE_AGE = 7 * 24 * 60 * 60  # 1 week
+
+# This setting ensures that the session doesn't expire when the browser is closed
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

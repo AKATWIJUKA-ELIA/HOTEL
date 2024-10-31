@@ -93,45 +93,7 @@
     <script src="{% static 'lib/tempusdominus/js/moment-timezone.min.js' %}"></script>
     <script src="{% static 'lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js' %}"></script>
 
-    <!-- Template Javascript -->
-     <script>
-      
-      const home = () => {
-            document.getElementById('home').classList.add('current');
-            document.getElementById('about').classList.remove('current');
-            document.getElementById('services').classList.remove('current');
-            document.getElementById('rooms').classList.remove('current');
-            document.getElementById('contact').classList.remove('current'); 
-      };
-      const about = () => {
-            document.getElementById('home').classList.remove('current');
-            document.getElementById('about').classList.add('current');
-            document.getElementById('services').classList.remove('current');
-            document.getElementById('rooms').classList.remove('current');
-            document.getElementById('contact').classList.remove('current');  
-            };
-      const services = () => {
-            document.getElementById('home').classList.aremove('current');
-            document.getElementById('about').classList.remove('current');
-            document.getElementById('services').classList.add('current');
-            document.getElementById('rooms').classList.remove('current');
-            document.getElementById('contact').classList.remove('current');  
-      };
-      const rooms = () => {
-            document.getElementById('home').classList.remove('current');
-            document.getElementById('about').classList.remove('current');
-            document.getElementById('services').classList.remove('current');
-            document.getElementById('rooms').classList.add('current');
-            document.getElementById('contact').classList.remove('current');  
-      };
-      const contact = () => {
-            document.getElementById('home').classList.remove('current');
-            document.getElementById('about').classList.remove('current');
-            document.getElementById('services').classList.remove('current');
-            document.getElementById('rooms').classList.remove('current');
-            document.getElementById('contact').classList.add('current');  
-      };
-     </script>
+
     <script src="{% static 'js/main.js' %}"></script>
 
 

@@ -75,14 +75,15 @@
                             <a id="about" href="{% url 'about' %}" class="nav-item nav-link " onclick="about">About</a>
                             <a id="services" href="{% url 'service' %}" class="nav-item nav-link" onclick="services">Services</a>
                             <a id="contact" href="{% url 'contact' %}" class="nav-item nav-link" onclick="contact">Contact</a>
+                            <a id="user-welcome" class="nav-item nav-link" onclick="contact">Hi-{{ username }}</a>
                             {% comment %} <a id="contact" href="" class="nav-item nav-link" onclick="contact">Sign Up</a> {% endcomment %}
                           </div>
                           <ul class="navbar-nav mb-lg-0">
                             <li class="nav-item">
-                              <a href="{% url 'sign_in' %}" class="btn btn-sm btn-light rounded py-2 px-4">LogIn</a>
+                              <a href="{% url 'cart' %}" class="btn btn-sm btn-light rounded py-2 px-4">Cart({{ items_on_cart }})</a>
                             </li>
                             <li class="nav-item">
-                              <a href="{% url 'sign_up' %}" class="btn btn-sm btn-outline-light rounded py-2 px-4">SignUp</a>
+                              <a href="{% url 'log_out' %}" class="btn btn-sm btn-outline-light rounded py-2 px-4">Logout</a>
                             </li>
                           </ul>
                         </div>
@@ -91,19 +92,19 @@
             </div>
         </div>
  
-        {% if messages %}
-        {% for message in messages %}
-          <div class=" alert alert-{{ message.tags }} alert-dismissible fade show" role ="alert" style= "text-align : center;background-color: rgb(171, 188, 188);">
-            <strong>
-              Info
-            </strong> {{ message }}
-            <button type ="button" class="btn-close" data-bs-dismiss="alert" aria-label="close">
-                
-            <span  aria-hidden="true"> &times;</span>
-            </button>
-          </div>
-        {% endfor %}
-      {% endif %}
+{% if messages %}
+{% for message in messages %}
+<div class=" alert alert-{{ message.tags }} alert-dismissible fade show" role ="alert" style= "text-align : center;background-color: rgb(171, 188, 188);">
+<strong>
+      Info
+</strong> {{ message }}
+<button type ="button" class="btn-close" data-bs-dismiss="alert" aria-label="close">
+      
+<span  aria-hidden="true"> &times;</span>
+</button>
+</div>
+{% endfor %}
+{% endif %}
 
         <!-- Carousel Start -->
         <div class="container-fluid p-0 mb-5">
@@ -152,11 +153,11 @@
         <!-- About Start -->
         <div class="container-xxl py-5">
             <div class="container">
-                <div class="row g-5 align-items-center" style="background-image: url('{% static 'images/2021-02-24.jpg' %}');">
+                <div class="row g-5 align-items-center" style=" background-repeat: no-repeat;background-size: cover; background-image: url('{% static 'images/amazima.jpg' %}');">
                     <div class="col-lg-6" style="background-color: rgb(1, 1, 19,0.5);">
                         <h6 class="section-title text-start text-primary text-uppercase">About Us</h6>
-                        <h1 class="mb-4">Welcome to <span class="text-primary text-uppercase">Golden View Hotel</span></h1>
-                        <p class="mb-4">Golden View Hotel is located in Western Uganda, 100m away from Ibanda Main street, Kitwe-Saaza, Ibanda Municipality in a calm and silent atmosphere giving you tranquil feel where our heart felt services await you, To make you feel the redifinition of Luxury.</p>
+                        <h1 class="mb-4">Welcome to <span class="text-primary text-uppercase">Amazima Restaurant</span></h1>
+                        <p class="mb-4 text-white">Golden View Hotel is located in Western Uganda, 100m away from Ibanda Main street, Kitwe-Saaza, Ibanda Municipality in a calm and silent atmosphere giving you tranquil feel where our heart felt services await you, To make you feel the redifinition of Luxury.</p>
                         <div class="row g-3 pb-4">
                             <div class="col-sm-4 wow fadeIn" data-wow-delay="0.1s">
                                 <div class="border rounded p-1">

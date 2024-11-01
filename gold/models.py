@@ -64,10 +64,10 @@ class Cart(models.Model):
       Cart_description = models.CharField(max_length=255)
       quantity = models.IntegerField(default=1)
       Cart_amount = models.IntegerField(default=1)
-      def total(self):
-            self.Cart_amount = self.Cart_price * self.quantity
-            self.save()
-            return self.Cart_amount
+      def save(self, *args, **kwargs):
+        # Update Cart_amount based on Cart_price and quantity
+        self.Cart_amount = self.Cart_price * self.quantity
+        super(Cart,self).save(*args, **kwargs)
       
 class Payments(models.Model):
       payment_id = models.CharField(max_length=255,primary_key=True)

@@ -154,7 +154,7 @@
                                                       <h5 class="mb-0">{{instance.Cart_name}}</h5>
                                                       <div class="ps-2">
                                                             
-                                                            Ushs: {{ instance.Cart_price }}
+                                                            Ushs: {{ instance.Cart_amount }}
                                                       </div>
                                                 </div>
                                                 <div class="d-flex mb-3">
@@ -164,9 +164,13 @@
                                                 </div>
                                                 <p class="text-body mb-3">{{instance.Cart_description}}</p>
                                                 <div class="d-flex justify-content-between">
-                                                      <a class="btn btn-sm btn-danger rounded py-2 px-4" href=""> <i  class="bi bi-trash"></i> Remove </a>
+
+                                                      {% comment %}
+                                                        deleting an item from the cart
+                                                      {% endcomment %}
+                                                      <a class="btn btn-sm btn-danger rounded delete  py-2 px-4 " data-cart-id={{ instance.pk }} href=""> <i  class="bi bi-trash"></i> Remove </a>
                                                       <div   class="" >
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-dash-square-fill" style="cursor: pointer;" viewBox="0 0 16 16">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-dash-square-fill reduce-cart" data-cart-id={{ instance.pk }} style="cursor: pointer;" viewBox="0 0 16 16">
                                                                   <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm2.5 7.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1"/>
                                                                 </svg>
                                                                 {{ instance.quantity }}
@@ -243,7 +247,7 @@
     <!-- Template Javascript -->
     <script src="{% static 'js/main.js' %}"></script>
     <script>
-      
+      {% comment %} INCREASE THE QUANTITY ON CART {% endcomment %}
       $(document).on('click', '.add-cart', function(e) {
             e.preventDefault();
             
@@ -266,6 +270,55 @@
                 }
             });
         });
+
+        {% comment %} REDUCE THE QUANTITY ON CART {% endcomment %}
+        $(document).on('click', '.reduce-cart', function(e) {
+            e.preventDefault();
+            
+            // Get the product ID from the data attribute of the clicked button
+            var cart_id = $(this).data('cart-id');
+        
+            $.ajax({
+                type: 'POST',
+                url: '{% url "decrease_quantity" %}',
+                data: {
+                  cart_id: cart_id,
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    action: 'post'
+                },
+                success: function(json) {
+                    console.log(json);
+                },
+                error: function(xhr, errmsg, err) {
+                    console.error(errmsg);
+                }
+            });
+        });  
+
+
+        {% comment %} DELETE THE QUANTITY ON CART {% endcomment %}
+        $(document).on('click', '.delete', function(e) {
+            e.preventDefault();
+            
+            // Get the product ID from the data attribute of the clicked button
+            var cart_id = $(this).data('cart-id');
+        
+            $.ajax({
+                type: 'POST',
+                url: '{% url "delete_from_cart" %}',
+                data: {
+                  cart_id: cart_id,
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    action: 'post'
+                },
+                success: function(json) {
+                    console.log(json);
+                },
+                error: function(xhr, errmsg, err) {
+                    console.error(errmsg);
+                }
+            });
+        });  
         
     </script>
 </body>

@@ -140,50 +140,55 @@
 
                               {% for instance in cart_item %}
                                
+                              <div class="row ">
+                                    <div class="col-lg-4 col-md-6 wow  w-75 fadeInUp" data-wow-delay="0.1s">
                               
-                              <div class="col-lg-4 col-md-6 wow  w-75 fadeInUp" data-wow-delay="0.1s">
-                              
-                                    <div class="row room-item shadow rounded overflow-hidden">
-                                          
-                                          <div class="col position-relative d-flex justify-content-center align-items-center flex-column" style="height: 200px;">
-                                                <img class="img-fluid" src="{{ instance.Cart_image.url }}" width="300" height="200" alt="food">
-                                          </div>
+                                          <div class="row room-item shadow rounded overflow-hidden">
+                                                
+                                                <div class="col position-relative d-flex justify-content-center align-items-center flex-column" style="height: 200px;">
+                                                      <img class="img-fluid" src="{{ instance.Cart_image.url }}" width="300" height="200" alt="food">
+                                                </div>
+            
+                                                <div class=" col p-4 mt-2">
+                                                      <div class="d-flex justify-content-between mb-3">
+                                                            <h5 class="mb-0">{{instance.Cart_name}}</h5>
+                                                            <div class="ps-2">
+                                                                  
+                                                                  Ushs: {{ instance.Cart_amount }}
+                                                            </div>
+                                                      </div>
+                                                      <div class="d-flex mb-3">
+                                                            <small class="border-end me-3 pe-3"><i class="fa fa-bed text-primary me-2"></i>3 Bed</small>
+                                                            <small class="border-end me-3 pe-3"><i class="fa fa-bath text-primary me-2"></i>2 Bath</small>
+                                                            <small><i class="fa fa-wifi text-primary me-2"></i>Wifi</small>
+                                                      </div>
+                                                      <p class="text-body mb-3">{{instance.Cart_description}}</p>
+                                                      <div class="d-flex justify-content-between">
       
-                                          <div class=" col p-4 mt-2">
-                                                <div class="d-flex justify-content-between mb-3">
-                                                      <h5 class="mb-0">{{instance.Cart_name}}</h5>
-                                                      <div class="ps-2">
-                                                            
-                                                            Ushs: {{ instance.Cart_amount }}
+                                                            {% comment %}
+                                                              deleting an item from the cart
+                                                            {% endcomment %}
+                                                            <a class="btn btn-sm btn-danger rounded delete  py-2 px-4 " data-cart-id={{ instance.pk }} href=""> <i  class="bi bi-trash"></i> Remove </a>
+                                                            <div   class="" >
+                                                                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-dash-square-fill reduce-cart" data-cart-id={{ instance.pk }} style="cursor: pointer;" viewBox="0 0 16 16">
+                                                                        <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm2.5 7.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1"/>
+                                                                      </svg>
+                                                                      {{ instance.quantity }}
+                                                                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-plus-square-fill add-cart" data-cart-id={{ instance.pk }} style="cursor: pointer;" viewBox="0 0 16 16">
+                                                                        <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0"/>
+                                                                      </svg>
+                                                            </div>
                                                       </div>
                                                 </div>
-                                                <div class="d-flex mb-3">
-                                                      <small class="border-end me-3 pe-3"><i class="fa fa-bed text-primary me-2"></i>3 Bed</small>
-                                                      <small class="border-end me-3 pe-3"><i class="fa fa-bath text-primary me-2"></i>2 Bath</small>
-                                                      <small><i class="fa fa-wifi text-primary me-2"></i>Wifi</small>
-                                                </div>
-                                                <p class="text-body mb-3">{{instance.Cart_description}}</p>
-                                                <div class="d-flex justify-content-between">
-
-                                                      {% comment %}
-                                                        deleting an item from the cart
-                                                      {% endcomment %}
-                                                      <a class="btn btn-sm btn-danger rounded delete  py-2 px-4 " data-cart-id={{ instance.pk }} href=""> <i  class="bi bi-trash"></i> Remove </a>
-                                                      <div   class="" >
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-dash-square-fill reduce-cart" data-cart-id={{ instance.pk }} style="cursor: pointer;" viewBox="0 0 16 16">
-                                                                  <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm2.5 7.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1"/>
-                                                                </svg>
-                                                                {{ instance.quantity }}
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-plus-square-fill add-cart" data-cart-id={{ instance.pk }} style="cursor: pointer;" viewBox="0 0 16 16">
-                                                                  <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0"/>
-                                                                </svg>
-                                                      </div>
-                                                </div>
+                                                
                                           </div>
                                           
                                     </div>
+
                                     
+
                               </div>
+                              
 
                               {% endfor %}
                         </div>
@@ -199,19 +204,19 @@
 
 
 
-                <div class="col-lg-4 col-md-6">
+                <div class="col-lg-4 col-md-6 w-25 h-25 mt-5">
                     <div class="container">
-                        <div class="wow fadeInUp" data-wow-delay="0.1s">
-                            <a class="service-item rounded" href="">
-                                <div class="service-icon bg-transparent border rounded p-1">
-                                    <div class="w-100 h-100 border rounded d-flex align-items-center justify-content-center">
+                        <div class="wow room-item shadow border fadeInUp " data-wow-delay="0.1s">
+                            <div class=" rounded " href="">
+                                <!-- <div class="service-icon bg-transparent border rounded p-1">
+                                    <div class="w-300 h-300 border rounded d-flex align-items-center justify-content-center">
                                         <i class="bi bi-cart3 text-primary"></i>
                                     </div>
-                                </div>
-                                <h5 class="mb-3">Cart Summary</h5>
-                                <h5 class="mb-3">Subtotal : {{ instance.Cart_amount }}</h5>
-                                <p class="text-body mb-0">Erat ipsum justo amet duo et elitr dolor, est duo duo eos lorem sed diam stet diam sed stet lorem.</p>
-                            </a>
+                                </div> -->
+                                <h5 class="mb-3 text-center">Cart Summary</h5>
+                                <h5 class="mb-3">Subtotal UGX : {{ total }}</h5>
+                            </div>
+                            <button type="button" class="btn  btn-sm btn-outline-dark px-auto hover:bg-primary rounded" style="margin-left: 100px;margin-bottom: 5px;" >check out</button>
                         </div>
                     </div>
                 </div>

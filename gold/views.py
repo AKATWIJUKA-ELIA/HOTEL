@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login,logout
 from django.core import serializers
 from django.http import JsonResponse
+from django.db.models import Sum
 
 
 
@@ -103,19 +104,19 @@ def cart(request):
                   messages.info(request, 'your cart is empty')
                   return render(request, 'cart.html', )
                         
-            # cart_ids =   []
-            # for item in sample:
-            #       cart_item = Cart.objects.get(pk=item.Cart_id_id)
-                  # cart_ids.append(item.Cart_id_id)
-            # print(cart_ids)
-            # for cart_id in cart_ids:
-            #       cart_item = Cart.objects.get(pk=cart_id)
-      
-            # print(cart_item.Cart_id.product_name)
+            # items to sum up
+            def get_total_cart_amount():
+                  total_amount = Cart.objects.filter(cart_user_id=request.user.Customer_id).aggregate(total=Sum('Cart_amount'))['total']
+                  return total_amount or 0
+            # print(get_total_cart_amount(request.user.Customer_id))
+            total_sum =  get_total_cart_amount()
+            print(total_sum)
+            
             
             items_on_cart = Cart.objects.all().filter(cart_user_id=request.user.Customer_id).count()
             context = {'items_on_cart':items_on_cart,
                   'cart_item':cart_item,
+                  'total':total_sum,
                   }
       return render(request, 'cart.html', context=context)
 ###==========================================######

@@ -30,7 +30,8 @@ ALLOWED_HOSTS = ['192.168.137.1',
                  '127.0.0.1',
                  '10.5.1.201',
                   '10.5.1.134',
-                  '.vercelp.app'
+                  '.vercelp.app',
+                  'amazimarestaurant.vercel.app'
                  ]
 
 

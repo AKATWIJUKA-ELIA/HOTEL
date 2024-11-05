@@ -5,13 +5,13 @@
 <head>
     <meta charset="utf-8">
     <meta charset="utf-8">
-    <title>Golden | About</title>
+    <title>Amazima | About</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="golden">
     <meta content="" name="hotel">
 
     <!-- Favicon -->
-    <link style="border-radius: 20px;" href="{% static 'images/images.jpg' %}" rel="icon">
+    <link style="border-radius: 20px;" href="{% static 'images/logo.png' %}" rel="icon">
 
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -43,10 +43,58 @@
             </div>
         </div>
         <!-- Spinner End -->
-
+        {% if request.user.is_authenticated %}
         {% include 'nav.html'%}
+        {% else %}
+        <div class="container-fluid bg-dark px-0">
+            <div class="row gx-0 ">
+      
+                
 
+                <div class="col-lg-9">
 
+                    <nav class="navbar navbar-expand-lg bg-dark navbar-dark p-3 p-lg-0">
+                        <div style="margin-top: 0%;" class="col-2">
+                              <img src="{% static 'images/logo.png' %}" alt="amazima restaurant logo"
+                                  height="100px" width="100px"
+                                  style="border-radius: 20px;">
+              
+                          </div>
+  
+                          <div  class="col-lg-3 bg-dark d-none d-lg-block" style="margin-left: 0%;">
+                              <a href="{% url 'index' %}" class="navbar-brand w-100 h-100 m-0 p-0 d-flex align-items-center ">
+                                  <h1 style="font-family: 'Times New Roman', Times, serif;" class="m-0 text-primary text-uppercase">Amazima Restaurant <br> <span> <h5 style="font-family: 'Times New Roman', Times, serif;color: gold;margin-left: 17%;">Luxury Redifined</h5> </span> </h1>
+                              </a>
+                          </div>
+                        <a href="{% url 'index' %}" class="navbar-brand d-block d-lg-none">
+                          <h1 
+               style="font-family: 'Times New Roman', Times, serif;" class="m-0 text-primary text-uppercase">Amazima Restaurant</h1>
+                        </a>
+                        <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                          <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div style="margin-left: 37%;" class="collapse navbar-collapse justify-content-between bg-transparent" id="navbarCollapse">
+                          <div class="navbar-nav mr-auto py-0">
+                            <a href="{% url 'index' %}" class="nav-item nav-link" onclick="home">Home</a>
+                            <a id="about" href="{% url 'about' %}" class="nav-item nav-link " onclick="about">About</a>
+                            <a id="services" href="{% url 'service' %}" class="nav-item nav-link" onclick="services">Services</a>
+                            <a id="contact" href="{% url 'contact' %}" class="nav-item nav-link" onclick="contact">Contact</a>
+                            {% comment %} <a id="contact" href="" class="nav-item nav-link" onclick="contact">Sign Up</a> {% endcomment %}
+                          </div>
+                          <ul class="navbar-nav mb-lg-0">
+                            <li class="nav-item">
+                              <a href="{% url 'sign_in' %}" class="btn btn-sm btn-light rounded py-2 px-4">LogIn</a>
+                            </li>
+                            <li class="nav-item">
+                              <a href="{% url 'sign_up' %}" class="btn btn-sm btn-outline-light rounded py-2 px-4">SignUp</a>
+                            </li>
+                          </ul>
+                        </div>
+                      </nav>
+                </div>
+            </div>
+        </div>
+        {% endif %}
         <!-- Page Header Start -->
         <div class="container-fluid page-header mb-5 p-0" style="background-image: url('{% static 'images/2021-02-24.jpg' %}');">
             <div class="container-fluid page-header-inner py-5">
@@ -54,8 +102,7 @@
                     <h1 class="display-3 text-white mb-3 animated slideInDown">About Us</h1>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb justify-content-center text-uppercase">
-                            <li class="breadcrumb-item"><a href="#">Home</a></li>
-                            <li class="breadcrumb-item"><a href="#">Pages</a></li>
+                            <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
                             <li class="breadcrumb-item text-white active" aria-current="page">About</li>
                         </ol>
                     </nav>
@@ -65,68 +112,25 @@
         <!-- Page Header End -->
 
 
-        <!-- Booking Start -->
-        <div class="container-fluid booking pb-5 wow fadeIn" data-wow-delay="0.1s">
-            <div class="container">
-                <div class="bg-white shadow" style="padding: 35px;">
-                    <!--<div class="row g-2">
-                        <div class="col-md-10">
-                            <div class="row g-2">
-                                <div class="col-md-3">
-                                    <div class="date" id="date1" data-target-input="nearest">
-                                        <input type="text" class="form-control datetimepicker-input"
-                                            placeholder="Check in" data-target="#date1" data-toggle="datetimepicker" />
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="date" id="date2" data-target-input="nearest">
-                                        <input type="text" class="form-control datetimepicker-input" placeholder="Check out" data-target="#date2" data-toggle="datetimepicker"/>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <select class="form-select">
-                                        <option selected>Adult</option>
-                                        <option value="1">Adult 1</option>
-                                        <option value="2">Adult 2</option>
-                                        <option value="3">Adult 3</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
-                                    <select class="form-select">
-                                        <option selected>Child</option>
-                                        <option value="1">Child 1</option>
-                                        <option value="2">Child 2</option>
-                                        <option value="3">Child 3</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <button class="btn btn-primary w-100">Submit</button>
-                        </div>
-                    </!--<div>-->
-                </div>
-            </div>
-        </div>
-        <!-- Booking End -->
+
 
 
         <!-- About Start -->
         <div class="container-xxl py-5">
             <div class="container">
                 <div class="row g-5 align-items-center">
-                    <div class="col-lg-6" style="background-image: url('{% static 'images/2021-02-24.jpg' %}');">
+                    <div class="col-lg-6" style="background-image: url('{% static 'images/IMG-20241025-WA0010.jpg' %}');">
 
                         <h6 class="section-title text-start text-primary text-uppercase">About Us</h6>
-                        <h5 class="mb-4">Welcome to <span class="text-primary text-uppercase">Golden View Hotel</span></h5>
-                        <p class="mb-4">Golden View Hotel is located in Western Uganda, 100m away from Ibanda Main street, Kitwe-Saaza, Ibanda Municipality in a calm and silent atmosphere giving you tranquil feel where our heart felt services await you, To make you feel the redifinition of Luxury.</p>
+                        <h5 class="mb-4">Welcome to <span class="text-primary text-uppercase">Amazima Restaurant</span></h5>
+                        <p class="mb-4 text-white">Amazima Restaurant is located in Western Uganda, 100m away from Ibanda Main street, Kitwe-Saaza, Ibanda Municipality in a calm and silent atmosphere giving you tranquil feel where our heart felt services await you, To make you feel the redifinition of Luxury.</p>
                         <div class="row g-3 pb-4">
                             <div class="col-sm-4 wow fadeIn" data-wow-delay="0.1s">
                                 <div class="border rounded p-1">
                                     <div class="border rounded text-center p-4">
                                         <i class="fa fa-hotel fa-2x text-primary mb-2"></i>
-                                        <h2 class="mb-1" data-toggle="counter-up">1234</h2>
-                                        <p class="mb-0">Rooms</p>
+                                        <h2 class="mb-1" data-toggle="counter-up">101</h2>
+                                        <p class="mb-0  text-dark" style="font-size: larger;font-weight: bold;">Dishes</p>
                                     </div>
                                 </div>
                             </div>
@@ -134,8 +138,8 @@
                                 <div class="border rounded p-1">
                                     <div class="border rounded text-center p-4">
                                         <i class="fa fa-users-cog fa-2x text-primary mb-2"></i>
-                                        <h2 class="mb-1" data-toggle="counter-up">1234</h2>
-                                        <p class="mb-0">Staffs</p>
+                                        <h2 class="mb-1" data-toggle="counter-up">101</h2>
+                                        <p class="mb-0 text-dark" style="font-size: larger;font-weight: bold;">Staffs</p>
                                     </div>
                                 </div>
                             </div>
@@ -143,8 +147,8 @@
                                 <div class="border rounded p-1">
                                     <div class="border rounded text-center p-4">
                                         <i class="fa fa-users fa-2x text-primary mb-2"></i>
-                                        <h2 class="mb-1" data-toggle="counter-up">1234</h2>
-                                        <p class="mb-0">Clients</p>
+                                        <h2 class="mb-1 text-white" data-toggle="counter-up">101</h2>
+                                        <p class="mb-0 text-dark" style="font-size: larger;font-weight: bold;">Clients</p>
                                     </div>
                                 </div>
                             </div>
@@ -154,16 +158,16 @@
                     <div class="col-lg-6">
                         <div class="row g-3">
                             <div class="col-6 text-end">
-                                <img class="img-fluid rounded w-75 wow zoomIn" data-wow-delay="0.1s" src="{% static 'images/table.png' %}" style="margin-top: 25%;">
+                                <img class="img-fluid rounded w-75 wow zoomIn" data-wow-delay="0.1s" src="{% static 'images/fruit.jpg' %}" style="margin-top: 25%;">
                             </div>
                             <div class="col-6 text-start">
-                                <img class="img-fluid rounded w-100 wow zoomIn" data-wow-delay="0.3s" src="{% static 'images/Screenshot 2023-10-10 130155copy.png' %}">
+                                <img class="img-fluid rounded w-100 wow zoomIn" data-wow-delay="0.3s" src="{% static 'images/katogo.jpg' %}">
                             </div>
                             <div class="col-6 text-end">
-                                <img class="img-fluid rounded w-50 wow zoomIn" data-wow-delay="0.5s" src="{% static 'images/2021-02-24.jpg' %}">
+                                <img class="img-fluid rounded w-50 wow zoomIn" data-wow-delay="0.5s" src="{% static 'images/saucege.jpg' %}">
                             </div>
                             <div class="col-6 text-start">
-                                <img class="img-fluid rounded w-75 wow zoomIn" data-wow-delay="0.7s" src="{% static 'images/room4.png' %}">
+                                <img class="img-fluid rounded w-75 wow zoomIn" data-wow-delay="0.7s" src="{% static 'images/chips.jpg' %}">
                             </div>
                         </div>
                     </div>
@@ -251,7 +255,7 @@
         <!-- Team End -->
 
 
-        {% include 'news_letter.html'%}
+        <!-- {% include 'news_letter.html'%} -->
         
 
         {% include 'footer.html' %}

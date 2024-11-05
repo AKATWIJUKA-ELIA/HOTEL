@@ -1,9 +1,12 @@
 from django.shortcuts import render, redirect,get_object_or_404
 from gold.models import News_letter, Customers,Products,Orders,Cart
 from django.contrib import messages
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login,logout
 from django.core import serializers
 from django.http import JsonResponse
+from django.db.models import Sum
+import requests
+
 
 
 
@@ -21,18 +24,41 @@ from django.http import JsonResponse
 #           pass
           
 def index(request):
-      
-      data = serializers.serialize("python",Products.objects.all() )
-      print(data)
-      items_on_cart = Cart.objects.count()
-      context = {'data':data,
-                 'items_on_cart':items_on_cart,
-                 } 
-      
-      print(items_on_cart)
-     
-      
-      return  render(request, 'index.html',context=context)
+      if request.user.is_authenticated:
+            return redirect('userpage')
+      else:
+            data = serializers.serialize("python",Products.objects.all() )
+            print(data)
+            # items_on_cart = Cart.objects.count()
+            context = {'data':data,
+                  #      'items_on_cart':items_on_cart,
+                  } 
+            
+            
+            # print(items_on_cart)
+            return  render(request, 'index.html',context=context)
+
+def userpage(request):
+      if request.user.is_authenticated:
+            try:
+                  data = serializers.serialize("python",Products.objects.all() )
+                  # data = Products.objects.all() 
+                  items_on_cart =  Cart.objects.all().filter(cart_user_id=request.user.Customer_id)
+            except Cart.DoesNotExist:
+                  context = {'data':data,
+                        'username':request.user.username
+                        }
+                  return  render(request, 'userpage.html',context)
+            finally:
+                  # items_on_cart = Cart.objects.count()
+                  context = {'data':data,
+                             'items_on_cart':items_on_cart.count(),
+                              'username':request.user.username
+                              }
+                   
+                   
+      # print(items_on_cart)
+      return  render(request, 'userpage.html',context=context)
 
 def admin(request):
       data = serializers.serialize("python",Products.objects.all() )   
@@ -61,57 +87,249 @@ def delete(request):
 
 
 def service(request):
-    return render(request, 'service.html')
-
+      if request.user.is_authenticated:
+            try:
+                  data = serializers.serialize("python",Products.objects.all() )
+                  # data = Products.objects.all() 
+                  items_on_cart =  Cart.objects.all().filter(cart_user_id=request.user.Customer_id)
+            except Cart.DoesNotExist:
+                  context = {'data':data,
+                        'username':request.user.username
+                        }
+                  return  render(request, 'userpage.html',context)
+            finally:
+                  # items_on_cart = Cart.objects.count()
+                  context = {'data':data,
+                             'items_on_cart':items_on_cart.count(),
+                              'username':request.user.username
+                              }
+            return render(request, 'service.html',context=context)
+      else:
+            return render(request, 'service.html')
 def contacts(request):
-    return render(request, 'contact.html')
+      if request.user.is_authenticated:
+            try:
+                  data = serializers.serialize("python",Products.objects.all() )
+                  # data = Products.objects.all() 
+                  items_on_cart =  Cart.objects.all().filter(cart_user_id=request.user.Customer_id)
+            except Cart.DoesNotExist:
+                  context = {'data':data,
+                        'username':request.user.username
+                        }
+                  return  render(request, 'userpage.html',context)
+            finally:
+                  # items_on_cart = Cart.objects.count()
+                  context = {'data':data,
+                             'items_on_cart':items_on_cart.count(),
+                              'username':request.user.username
+                              }
+            return render(request, 'contact.html',context=context)
+      else:
+            return render(request, 'contact.html')
 
 def about(request):
-    return render(request, 'about.html')
+      if request.user.is_authenticated:
+            try:
+                  data = serializers.serialize("python",Products.objects.all() )
+                  # data = Products.objects.all() 
+                  items_on_cart =  Cart.objects.all().filter(cart_user_id=request.user.Customer_id)
+            except Cart.DoesNotExist:
+                  context = {'data':data,
+                        'username':request.user.username
+                        }
+                  return  render(request, 'userpage.html',context)
+            finally:
+                  # items_on_cart = Cart.objects.count()
+                  context = {'data':data,
+                             'items_on_cart':items_on_cart.count(),
+                              'username':request.user.username
+                              }
+            return render(request, 'about.html',context=context)
+      else:
+            return render(request, 'about.html')
 
 def cart(request):
-      # cart_item = serializers.serialize("python",Cart.objects.all() )
-      cart_item =  Cart.objects.all()
-      # print(sample)
-      # cart_ids =   []
-      # for item in sample:
-      #       cart_item = Cart.objects.get(pk=item.Cart_id_id)
-            # cart_ids.append(item.Cart_id_id)
-      # print(cart_ids)
-      # for cart_id in cart_ids:
-      #       cart_item = Cart.objects.get(pk=cart_id)
-     
-      # print(cart_item.Cart_id.product_name)
-      
-      items_on_cart = Cart.objects.count()
-      context = {'items_on_cart':items_on_cart,
-                 'cart_item':cart_item,
-                 }
-      return render(request, 'cart.html', context=context)
-
-def Add_Item_to_cart(request):
-      if request.POST.get('action') == 'post':
-            product_id = int(request.POST.get('product_id'))
-            print(product_id)
-            product = Products.objects.get(product_id=product_id)
-            print(product)
-            if Cart.objects.filter(Cart_id=product_id).exists():
-                  messages.error(request, 'product already added to cart, check your cart to increase the quantity')
-                  return render(request, 'index.html')
-            else:
-                  newcart = Cart.objects.create(Cart_id=product,
-                                                # Cart_image=product.product_image,Cart_name=product.product_name,Cart_price=product.product_price,Cart_description=product.product_description
-                                                )
+      if request.user.is_authenticated:
+            try:
+                  # cart_item = serializers.serialize("python",Cart.objects.all() )
+                  cart_item =  Cart.objects.all().filter(cart_user_id=request.user.Customer_id)
                   
-                  newcart.save()
-                  print(newcart)
-                  messages.success(request, 'Product Successfully added to cart')
-                  return render(request, 'index.html')
-             
-      return render(request, 'index.html')
+                  print(cart_item)
+            except Cart.DoesNotExist:
+                  messages.info(request, 'your cart is empty')
+                  return render(request, 'cart.html', )
+                        
+            # items to sum up
+            def get_total_cart_amount():
+                  total_amount = Cart.objects.filter(cart_user_id=request.user.Customer_id).aggregate(total=Sum('Cart_amount'))['total']
+                  return total_amount or 0
+            # print(get_total_cart_amount(request.user.Customer_id))
+            total_sum =  get_total_cart_amount()
+            print(total_sum)
+            
+            
+            
+            items_on_cart = Cart.objects.all().filter(cart_user_id=request.user.Customer_id).count()
+            context = {'items_on_cart':items_on_cart,
+                  'cart_item':cart_item,
+                  'total':total_sum,
+                  }
+      return render(request, 'cart.html', context=context)
+###==========================================######
+#           A D D I N G   I T E M   TO  C A R T
+#============================================######
+def Add_Item_to_cart(request):
+    if request.user.is_authenticated:
+        name = request.user
+        customer = Customers.objects.get(username=name)
+        
+        if request.POST.get('action') == 'post':
+            product_id = int(request.POST.get('product_id'))
+            product = Products.objects.get(product_id=product_id)
+
+            # Check if the product is already in the cart
+            if Cart.objects.filter(cart_user=customer, Product_id=product_id).exists():
+                messages.info(request, 'Product already added to cart, check your cart to increase the quantity')
+                return render(request, 'userpage.html')
+            else:
+                # Create a new cart item
+                newcart = Cart.objects.create(
+                    cart_user=customer,
+                    Product_id=product_id,
+                    Cart_image=product.product_image,
+                    Cart_name=product.product_name,
+                    Cart_price=product.product_price,
+                    Cart_description=product.product_description
+                )
+                newcart.save()
+                messages.success(request, 'Product successfully added to cart')
+                return render(request, 'index.html')
+        
+        return render(request, 'index.html')
+    else:
+        messages.error(request, 'You must have an account to be able to add to cart')
+        return render(request, 'sign_in.html')
+      
+      
+      
 
 
-# =========S I G N I N G    U P=========== #
+###==========================================######
+#          I N C R E A S E   Q U A N T I T Y   ON  CART
+#============================================######
+def increase(request):
+      if request.user.is_authenticated:
+            name = request.user
+            customer = Customers.objects.get(username=name)
+            cart_id = request.POST['cart_id']
+            print(cart_id)
+      
+            cart_object = Cart.objects.get(cart_user_id=customer.Customer_id, cart_id=cart_id)
+            # if cart_objects.cart_user_id == customer.Customer_id and cart_objects.cart_id == cart_id:
+                  # new_object = Cart.objects.get(cart_user_id=customer.Customer_id, cart_id=cart_id)
+            cart_object.quantity += 1
+            cart_object.Cart_amount = cart_object.Cart_price* cart_object.quantity
+            cart_object.save()
+            print(cart_object.quantity)
+      return redirect('cart')
+
+###==========================================######
+#          D E C R E A S E   Q U A N T I T Y   ON  CART
+#============================================######
+def decrease(request):
+      if request.user.is_authenticated:
+            name = request.user
+            customer = Customers.objects.get(username=name)
+            cart_id = request.POST['cart_id']
+            print(cart_id)
+      
+            cart_object = Cart.objects.get(cart_user_id=customer.Customer_id, cart_id=cart_id)
+            # if cart_objects.cart_user_id == customer.Customer_id and cart_objects.cart_id == cart_id:
+                  # new_object = Cart.objects.get(cart_user_id=customer.Customer_id, cart_id=cart_id)
+            if cart_object.quantity > 1:
+                  cart_object.quantity -= 1
+                  cart_object.save()
+                  print(cart_object.quantity)
+            else:
+                  pass
+      return redirect('cart')    
+      
+      
+###==========================================######
+#          D E L E T E  I T E M  F R O M    C A R T
+#============================================######
+def delete_from_cart(request):
+      if request.user.is_authenticated:
+            name = request.user
+            customer = Customers.objects.get(username=name)
+            cart_id = request.POST.get('cart_id')
+            print(cart_id)
+            cart_object = Cart.objects.get(cart_user_id=customer.Customer_id, cart_id=cart_id)
+            cart_object.delete()
+            messages.success(request,  "Product deleted successfully")
+            message_text = "Product deleted successfully"
+            success = True
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                  return JsonResponse({
+                'message': message_text,
+                'success': success
+            })
+      return redirect('cart')
+
+
+###==========================================######
+#           P A Y M E N T S
+#============================================######
+
+def payments(request):
+      if request.user.is_authenticated:
+            name = request.user
+            phone_number  = request.user.phone_number
+
+            # customer = Customers.objects.get(username=name)
+            # cart_id = request.POST['cart_id']
+            # cart_object = Cart.objects.get(cart_user_id=customer.Customer_id, cart_id=cart_id)
+            
+            # items to sum up
+            def get_total_cart_amount():
+                  total_amount = Cart.objects.filter(cart_user_id=request.user.Customer_id).aggregate(total=Sum('Cart_amount'))['total']
+                  return total_amount or 0
+            # print(get_total_cart_amount(request.user.Customer_id))
+            total_sum =  get_total_cart_amount()
+            
+            headers = {
+                        'Accept': '*/* ',
+                        'Content-Type': 'application/json',
+                        'X-Country': 'UG',
+                        'X-Currency': 'UGX',
+                        'Authorization': '',
+                        'x-signature': 'MGsp*****************Ag==',
+                        'x-key':       'd53a900e-848a-4377-a2a1-14f6470f8e44' 
+                        }
+            
+            data = {
+                  "reference": "Testing transaction",
+                  "subscriber": {
+                        "country": "UG",
+                        "currency": "UGX",
+                        "msisdn": phone_number
+                  },
+                  "transaction": {
+                        "amount": total_sum,
+                        "country": "UG",
+                        "currency": "UGX",
+                        "id": "34343453"
+                  }
+                  }
+            r = requests.post('https://openapiuat.airtel.africa/merchant/v2/payments/', data=data,  params={},headers = headers)
+            print(r.json())
+            
+      return render(request, 'cart.html')      
+                                           
+
+###==========================================######
+#           S I G N I N G    U P
+#============================================######
 def sign_up(request):
       if request.method == "POST":
             username = request.POST.get('username')
@@ -154,7 +372,10 @@ def sign_in(request):
                   login(request,user)
                   username=user.username
                   #self.logged_in = True
-                  return render(request,'userpage.html', {'username': username.capitalize()})
+                  # data = serializers.serialize("python",Products.objects.all() )
+                  # context = {'data':data,
+                  #            'username': username.capitalize()} 
+                  return redirect('userpage')
                   
             else:
                   messages.error(request, "bad credentials")
@@ -165,16 +386,34 @@ def sign_in(request):
                   
       return render(request, "sign_in.html", context)
 
+def log_out(request):
+      logout(request)
+      return  redirect('index')
+
+
 def news_letter(request):
-    
-    if request.method == "POST":
-        email = request.POST["email"]
-        print(email)
-        
-    if News_letter.objects.filter(email=email).exists():
-        messages.info(request,"email already exists")
-    else:
-        new = News_letter.objects.create(email=email)
-        new.save()
-        messages.info(request, "Thank you for Subscribing")
-    return render(request, 'index.html')
+      if request.user.is_authenticated:
+                
+            if request.method == "POST":
+                  email = request.POST["email"]
+                  print(email)
+                  
+            if News_letter.objects.filter(email=email).exists():
+                  messages.info(request,"email already exists")
+            else:
+                  new = News_letter.objects.create(email=email)
+                  new.save()
+                  messages.info(request, "Thank you for Subscribing")
+            return redirect('userpage')
+      else:
+            if request.method == "POST":
+                  email = request.POST["email"]
+                  print(email)
+                  
+            if News_letter.objects.filter(email=email).exists():
+                  messages.info(request,"email already exists")
+            else:
+                  new = News_letter.objects.create(email=email)
+                  new.save()
+                  messages.info(request, "Thank you for Subscribing")
+            return render(request,'index.html')

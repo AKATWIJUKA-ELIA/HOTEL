@@ -27,7 +27,10 @@ SECRET_KEY = 'django-insecure-9mj8q%uv0&+pv%dcdb275#k_qa30#^5s1=em5)d$is%p(yp3b3
 DEBUG = True
 
 ALLOWED_HOSTS = ['192.168.137.1',
-                 '127.0.0.1'
+                 '127.0.0.1',
+                 '10.5.1.201',
+                  '10.5.1.134',
+                  '.vercelp.app'
                  ]
 
 
@@ -42,6 +45,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'gold',
 ]
+
+# Set session expiration time in seconds (e.g., 1 week = 7 days * 24 hours * 60 minutes * 60 seconds)
+SESSION_COOKIE_AGE = 7 * 24 * 60 * 60  # 1 week
+
+# This setting ensures that the session doesn't expire when the browser is closed
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

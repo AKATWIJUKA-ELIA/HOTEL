@@ -55,16 +55,19 @@ class Orders(models.Model):
       status = models.BooleanField(default=False)
       
 class Cart(models.Model):
-      Cart_id = models.OneToOneField(to=Products, on_delete=models.CASCADE,primary_key=True)
-      # Cart_image = models.ImageField(upload_to='cart/')
-      # Cart_name = models.CharField(max_length=255)
-      # Cart_price = models.DecimalField(max_digits=10, decimal_places=2)            
-      # Cart_description = models.CharField(max_length=255)
-      quantity = models.IntegerField(default=0)
-      Cart_amount = models.IntegerField(default=0)
-      def total(self):
-            total = self.Cart_price*self.quantity
-            self.Cart_amount = total
+      cart_id = models.AutoField(primary_key=True, unique=True,default=None)
+      cart_user = models.ForeignKey(to=Customers, on_delete=models.CASCADE)
+      Product_id = models.IntegerField(default=None)
+      Cart_image = models.ImageField(upload_to='cart/')
+      Cart_name = models.CharField(max_length=255)
+      Cart_price = models.DecimalField(max_digits=10, decimal_places=2)            
+      Cart_description = models.CharField(max_length=255)
+      quantity = models.IntegerField(default=1)
+      Cart_amount = models.DecimalField(default=1,max_digits=10,decimal_places=2)
+      def save(self, *args, **kwargs):
+        # Update Cart_amount based on Cart_price and quantity
+        self.Cart_amount = self.Cart_price * self.quantity
+        super(Cart,self).save(*args, **kwargs)
       
 class Payments(models.Model):
       payment_id = models.CharField(max_length=255,primary_key=True)

@@ -38,24 +38,81 @@
             <meta content="" name="keywords">
             <meta content="" name="description">
             <!-- CSS FILES -->
+
+            <link style="border-radius: 20px;" href="{% static 'images/images.jpg' %}" rel="icon">
+
+            <!-- Google Web Fonts -->
             <link rel="preconnect" href="https://fonts.googleapis.com">
-      
             <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-      
-            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;700;900&display=swap" rel="stylesheet">
-      
-            <link href="{% static 'css-sign/bootstrap.min.css' %}" rel="stylesheet">
-            <link href="{% static 'css-sign/bootstrap-icons.css'%}" rel="stylesheet">
-      
-            <link rel="stylesheet" href="{% static 'css-sign/slick.css' %}"/>
-      
-            <link href="{% static 'css-sign/tooplate-little-fashion.css' %} " rel="stylesheet">
+            <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">  
+        
+            <!-- Icon Font Stylesheet -->
+            <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+        
+            <!-- Libraries Stylesheet -->
+            <link href=" {% static 'lib/animate/animate.min.css' %}" rel="stylesheet">
+            <link href="{% static 'lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
+            <link href=" {% static 'lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css'%}" rel="stylesheet" />
+        
+            <!-- Customized Bootstrap Stylesheet -->
+            <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+        
+            <!-- Template Stylesheet -->
+            <link href=" {% static 'css/style.css' %}" rel="stylesheet">
       
       </head>
     
     <body>
 
-      {% include "nav.html" %}
+             <!-- Header Start -->
+             <div class="container-fluid bg-dark px-0">
+                  <div class="row gx-0 ">
+            
+                      
+      
+                      <div class="col-lg-9">
+      
+                          <nav class="navbar navbar-expand-lg bg-dark navbar-dark p-3 p-lg-0">
+                              <div style="margin-top: 0%;" class="col-2">
+                                    <img src="{% static 'images/logo.png' %}" alt="amazima logo"
+                                        height="100px" width="100px"
+                                        style="border-radius: 20px;">
+                    
+                                </div>
+        
+                                <div  class="col-lg-3 bg-dark d-none d-lg-block" style="margin-left: 0%;">
+                                    <a href="index.html" class="navbar-brand w-100 h-100 m-0 p-0 d-flex align-items-center ">
+                                        <h1 style="font-family: 'Times New Roman', Times, serif;" class="m-0 text-primary text-uppercase">Amazima Restaurant <br> <span> <h5 style="font-family: 'Times New Roman', Times, serif;color: gold;margin-left: 17%;">Luxury Redifined</h5> </span> </h1>
+                                    </a>
+                                </div>
+                              <a href="{% url 'index' %}" class="navbar-brand d-block d-lg-none">
+                                <h1 
+                     style="font-family: 'Times New Roman', Times, serif;" class="m-0 text-primary text-uppercase">Amazima Restaurant</h1>
+                              </a>
+                              <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                                <span class="navbar-toggler-icon"></span>
+                              </button>
+                              <div style="margin-left: 37%;" class="collapse navbar-collapse justify-content-between bg-transparent" id="navbarCollapse">
+                                <div class="navbar-nav mr-auto py-0">
+                                  <a href="{% url 'index' %}" class="nav-item nav-link current" onclick="home">Home</a>
+                                  <a id="about" href="{% url 'about' %}" class="nav-item nav-link " onclick="about">About</a>
+                                  <a id="services" href="{% url 'service' %}" class="nav-item nav-link" onclick="services">Services</a>
+                                  <a id="contact" href="{% url 'contact' %}" class="nav-item nav-link" onclick="contact">Contact</a>
+                                  {% comment %} <a id="contact" href="" class="nav-item nav-link" onclick="contact">Sign Up</a> {% endcomment %}
+                                </div>
+                                <ul class="navbar-nav mb-lg-0">
+                                 
+                                  <li class="nav-item">
+                                    <a href="{% url 'sign_up' %}" class="btn btn-sm btn-outline-light rounded py-2 px-4">SignUp</a>
+                                  </li>
+                                </ul>
+                              </div>
+                            </nav>
+                      </div>
+                  </div>
+              </div>
+              <!-- Header End -->``
 
       {% if messages %}
                     {% for message in messages %}
@@ -124,12 +181,19 @@
         
 
         <!-- JAVASCRIPT FILES -->
-        <script src="{% static "js-sign/jquery.min.js" %} "></script>
-        <script src="{% static "js-sign/bootstrap.bundle.min.js" %} "></script>
-        <script src="{% static "js-sign/Headroom.js" %} "></script>
-        <script src="{% static "js-sign/jQuery.headroom.js" %} "></script>
-        <script src="{% static "js-sign/slick.min.js" %} "></script>
-        <script src="{% static "js-sign/custom.js" %} "></script>
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="{% static 'lib/wow/wow.min.js' %}"></script>
+        <script src="{% static 'lib/easing/easing.min.js' %}"></script>
+        <script src="{% static 'lib/waypoints/waypoints.min.js' %}"></script>
+        <script src="{% static 'lib/counterup/counterup.min.js' %}"></script>
+        <script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
+        <script src="{% static 'lib/tempusdominus/js/moment.min.js' %}"></script>
+        <script src="{% static 'lib/tempusdominus/js/moment-timezone.min.js' %}"></script>
+        <script src="{% static 'lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js' %}"></script>
+    
+    
+        <script src="{% static 'js/main.js' %}"></script>
 
     </body>
 </html>

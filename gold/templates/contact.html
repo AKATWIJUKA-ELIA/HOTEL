@@ -4,13 +4,13 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Golden | Contact</title>
+    <title>Amazima | Contact</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
     <meta content="" name="description">
 
     <!-- Favicon -->
-    <link style="border-radius: 20px;" href="{% static 'images/images.jpg' %}" rel="icon">
+    <link style="border-radius: 20px;" href="{% static 'images/logo.png' %}" rel="icon">
 
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -34,7 +34,7 @@
 </head>
 
 <body>
-    <div class="container-xxl bg-white p-0">
+    <div class="container-fluid bg-white p-0">
         <!-- Spinner Start -->
         <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
             <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
@@ -42,9 +42,58 @@
             </div>
         </div>
         <!-- Spinner End -->
-
+       {% if request.user.is_authenticated %}
        {% include 'nav.html'%}
+       {% else %}
+       <div class="container-fluid bg-dark px-0">
+            <div class="row gx-0 ">
+      
+                
 
+                <div class="col-lg-9">
+
+                    <nav class="navbar navbar-expand-lg bg-dark navbar-dark p-3 p-lg-0">
+                        <div style="margin-top: 0%;" class="col-2">
+                              <img src="{% static 'images/images.jpg' %}" alt="Golden view hotel logo"
+                                  height="100px" width="100px"
+                                  style="border-radius: 20px;">
+              
+                          </div>
+  
+                          <div  class="col-lg-3 bg-dark d-none d-lg-block" style="margin-left: 0%;">
+                              <a href="{% url 'index' %}" class="navbar-brand w-100 h-100 m-0 p-0 d-flex align-items-center ">
+                                  <h1 style="font-family: 'Times New Roman', Times, serif;" class="m-0 text-primary text-uppercase">Amazima Restaurant <br> <span> <h5 style="font-family: 'Times New Roman', Times, serif;color: gold;margin-left: 17%;">Luxury Redifined</h5> </span> </h1>
+                              </a>
+                          </div>
+                        <a href="{% url 'index' %}" class="navbar-brand d-block d-lg-none">
+                          <h1 
+               style="font-family: 'Times New Roman', Times, serif;" class="m-0 text-primary text-uppercase">Amazima Restaurant</h1>
+                        </a>
+                        <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                          <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div style="margin-left: 37%;" class="collapse navbar-collapse justify-content-between bg-transparent" id="navbarCollapse">
+                          <div class="navbar-nav mr-auto py-0">
+                            <a href="{% url 'index' %}" class="nav-item nav-link" onclick="home">Home</a>
+                            <a id="about" href="{% url 'about' %}" class="nav-item nav-link " onclick="about">About</a>
+                            <a id="services" href="{% url 'service' %}" class="nav-item nav-link" onclick="services">Services</a>
+                            <a id="contact" href="{% url 'contact' %}" class="nav-item nav-link" onclick="contact">Contact</a>
+                            {% comment %} <a id="contact" href="" class="nav-item nav-link" onclick="contact">Sign Up</a> {% endcomment %}
+                          </div>
+                          <ul class="navbar-nav mb-lg-0">
+                            <li class="nav-item">
+                              <a href="{% url 'sign_in' %}" class="btn btn-sm btn-light rounded py-2 px-4">LogIn</a>
+                            </li>
+                            <li class="nav-item">
+                              <a href="{% url 'sign_up' %}" class="btn btn-sm btn-outline-light rounded py-2 px-4">SignUp</a>
+                            </li>
+                          </ul>
+                        </div>
+                      </nav>
+                </div>
+            </div>
+        </div>
+        {% endif %}
 
         <!-- Page Header Start -->
         <div class="container-fluid page-header mb-5 p-0" style="background-image: url({% static 'images/5804452f_z.jpg' %});">
@@ -53,8 +102,7 @@
                     <h1 class="display-3 text-white mb-3 animated slideInDown">Contact</h1>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb justify-content-center text-uppercase">
-                            <li class="breadcrumb-item"><a href="#">Home</a></li>
-                            <li class="breadcrumb-item"><a href="#">Pages</a></li>
+                            <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
                             <li class="breadcrumb-item text-white active" aria-current="page">Contact</li>
                         </ol>
                     </nav>
@@ -89,7 +137,7 @@
                         </div>
                     </div>
                     <div class="col-md-6 wow fadeIn" data-wow-delay="0.1s">
-                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.8081466233525!2d30.498966199999995!3d-0.12939010000000004!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x19d8bde7e4245b53%3A0x47074a17d2c6372e!2sGolden%20View%20Hotel%20Ibanda!5e0!3m2!1sen!2sug!4v1716310894079!5m2!1sen!2sug" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.8081466233525!2d30.498966199999995!3d-0.52939010000000004!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x19d8bde7e4245b53%3A0x47074a17d2c6372e!2sGolden%20View%20Hotel%20Ibanda!5e0!3m2!1sen!2sug!4v1716310894079!5m2!1sen!2sug" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
                     </div>
                     <div class="col-md-6">
                         <div class="wow fadeInUp" data-wow-delay="0.2s">
@@ -131,8 +179,6 @@
         </div>
         <!-- Contact End -->
 
-
-        {% include 'news_letter.html'%}
         
 
         {% include 'footer.html' %}

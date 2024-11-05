@@ -63,7 +63,7 @@ class Cart(models.Model):
       Cart_price = models.DecimalField(max_digits=10, decimal_places=2)            
       Cart_description = models.CharField(max_length=255)
       quantity = models.IntegerField(default=1)
-      Cart_amount = models.IntegerField(default=1)
+      Cart_amount = models.DecimalField(default=1,max_digits=10,decimal_places=2)
       def save(self, *args, **kwargs):
         # Update Cart_amount based on Cart_price and quantity
         self.Cart_amount = self.Cart_price * self.quantity

@@ -5,6 +5,8 @@ from django.contrib.auth import authenticate, login,logout
 from django.core import serializers
 from django.http import JsonResponse
 from django.db.models import Sum
+import requests
+
 
 
 
@@ -85,13 +87,66 @@ def delete(request):
 
 
 def service(request):
-    return render(request, 'service.html')
-
+      if request.user.is_authenticated:
+            try:
+                  data = serializers.serialize("python",Products.objects.all() )
+                  # data = Products.objects.all() 
+                  items_on_cart =  Cart.objects.all().filter(cart_user_id=request.user.Customer_id)
+            except Cart.DoesNotExist:
+                  context = {'data':data,
+                        'username':request.user.username
+                        }
+                  return  render(request, 'userpage.html',context)
+            finally:
+                  # items_on_cart = Cart.objects.count()
+                  context = {'data':data,
+                             'items_on_cart':items_on_cart.count(),
+                              'username':request.user.username
+                              }
+            return render(request, 'service.html',context=context)
+      else:
+            return render(request, 'service.html')
 def contacts(request):
-    return render(request, 'contact.html')
+      if request.user.is_authenticated:
+            try:
+                  data = serializers.serialize("python",Products.objects.all() )
+                  # data = Products.objects.all() 
+                  items_on_cart =  Cart.objects.all().filter(cart_user_id=request.user.Customer_id)
+            except Cart.DoesNotExist:
+                  context = {'data':data,
+                        'username':request.user.username
+                        }
+                  return  render(request, 'userpage.html',context)
+            finally:
+                  # items_on_cart = Cart.objects.count()
+                  context = {'data':data,
+                             'items_on_cart':items_on_cart.count(),
+                              'username':request.user.username
+                              }
+            return render(request, 'contact.html',context=context)
+      else:
+            return render(request, 'contact.html')
 
 def about(request):
-    return render(request, 'about.html')
+      if request.user.is_authenticated:
+            try:
+                  data = serializers.serialize("python",Products.objects.all() )
+                  # data = Products.objects.all() 
+                  items_on_cart =  Cart.objects.all().filter(cart_user_id=request.user.Customer_id)
+            except Cart.DoesNotExist:
+                  context = {'data':data,
+                        'username':request.user.username
+                        }
+                  return  render(request, 'userpage.html',context)
+            finally:
+                  # items_on_cart = Cart.objects.count()
+                  context = {'data':data,
+                             'items_on_cart':items_on_cart.count(),
+                              'username':request.user.username
+                              }
+            return render(request, 'about.html',context=context)
+      else:
+            return render(request, 'about.html')
 
 def cart(request):
       if request.user.is_authenticated:
@@ -111,6 +166,7 @@ def cart(request):
             # print(get_total_cart_amount(request.user.Customer_id))
             total_sum =  get_total_cart_amount()
             print(total_sum)
+            
             
             
             items_on_cart = Cart.objects.all().filter(cart_user_id=request.user.Customer_id).count()
@@ -206,12 +262,70 @@ def delete_from_cart(request):
       if request.user.is_authenticated:
             name = request.user
             customer = Customers.objects.get(username=name)
-            cart_id = request.POST['cart_id']
+            cart_id = request.POST.get('cart_id')
+            print(cart_id)
             cart_object = Cart.objects.get(cart_user_id=customer.Customer_id, cart_id=cart_id)
             cart_object.delete()
-            messages.info(request,  'Product deleted successfully')
+            messages.success(request,  "Product deleted successfully")
+            message_text = "Product deleted successfully"
+            success = True
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                  return JsonResponse({
+                'message': message_text,
+                'success': success
+            })
       return redirect('cart')
 
+
+###==========================================######
+#           P A Y M E N T S
+#============================================######
+
+def payments(request):
+      if request.user.is_authenticated:
+            name = request.user
+            phone_number  = request.user.phone_number
+
+            # customer = Customers.objects.get(username=name)
+            # cart_id = request.POST['cart_id']
+            # cart_object = Cart.objects.get(cart_user_id=customer.Customer_id, cart_id=cart_id)
+            
+            # items to sum up
+            def get_total_cart_amount():
+                  total_amount = Cart.objects.filter(cart_user_id=request.user.Customer_id).aggregate(total=Sum('Cart_amount'))['total']
+                  return total_amount or 0
+            # print(get_total_cart_amount(request.user.Customer_id))
+            total_sum =  get_total_cart_amount()
+            
+            headers = {
+                        'Accept': '*/* ',
+                        'Content-Type': 'application/json',
+                        'X-Country': 'UG',
+                        'X-Currency': 'UGX',
+                        'Authorization': '',
+                        'x-signature': 'MGsp*****************Ag==',
+                        'x-key':       'd53a900e-848a-4377-a2a1-14f6470f8e44' 
+                        }
+            
+            data = {
+                  "reference": "Testing transaction",
+                  "subscriber": {
+                        "country": "UG",
+                        "currency": "UGX",
+                        "msisdn": phone_number
+                  },
+                  "transaction": {
+                        "amount": total_sum,
+                        "country": "UG",
+                        "currency": "UGX",
+                        "id": "34343453"
+                  }
+                  }
+            r = requests.post('https://openapiuat.airtel.africa/merchant/v2/payments/', data=data,  params={},headers = headers)
+            print(r.json())
+            
+      return render(request, 'cart.html')      
+                                           
 
 ###==========================================######
 #           S I G N I N G    U P
@@ -278,15 +392,28 @@ def log_out(request):
 
 
 def news_letter(request):
-    
-    if request.method == "POST":
-        email = request.POST["email"]
-        print(email)
-        
-    if News_letter.objects.filter(email=email).exists():
-        messages.info(request,"email already exists")
-    else:
-        new = News_letter.objects.create(email=email)
-        new.save()
-        messages.info(request, "Thank you for Subscribing")
-    return render(request, 'index.html')
+      if request.user.is_authenticated:
+                
+            if request.method == "POST":
+                  email = request.POST["email"]
+                  print(email)
+                  
+            if News_letter.objects.filter(email=email).exists():
+                  messages.info(request,"email already exists")
+            else:
+                  new = News_letter.objects.create(email=email)
+                  new.save()
+                  messages.info(request, "Thank you for Subscribing")
+            return redirect('userpage')
+      else:
+            if request.method == "POST":
+                  email = request.POST["email"]
+                  print(email)
+                  
+            if News_letter.objects.filter(email=email).exists():
+                  messages.info(request,"email already exists")
+            else:
+                  new = News_letter.objects.create(email=email)
+                  new.save()
+                  messages.info(request, "Thank you for Subscribing")
+            return render(request,'index.html')

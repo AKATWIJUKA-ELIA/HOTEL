@@ -21,6 +21,7 @@ urlpatterns =[
     path('decrease_quantity/', views.decrease,name="decrease_quantity"),
     path('newsletter/', views.news_letter,name="news_letter"),
     path('Add_Item_to_cart/', views.Add_Item_to_cart,name="Add_Item_to_cart"),
+    path('payments/', views.payments,name="payments"),
     
 ]
 if settings.DEBUG:

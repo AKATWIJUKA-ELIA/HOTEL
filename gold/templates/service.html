@@ -4,13 +4,13 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Golden | Services</title>
+    <title>Amazima | Services</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
     <meta content="" name="description">
 
     <!-- Favicon -->
-    <link style="border-radius: 20px;" href="{% static 'images/images.jpg' %}" rel="icon">
+    <link style="border-radius: 20px;" href="{% static 'images/logo.png' %}" rel="icon">
 
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -34,7 +34,7 @@
 </head>
 
 <body>
-    <div class="container-xxl bg-white p-0">
+    <div class="container-fluid bg-white p-0">
         <!-- Spinner Start -->
         <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
             <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
@@ -43,8 +43,58 @@
         </div>
         <!-- Spinner End -->
 
-        {% include 'nav.html'%}
+         {% if request.user.is_authenticated %}
+         {% include 'nav.html' %}
+         {% else %}
+         <div class="container-fluid bg-dark px-0">
+            <div class="row gx-0 ">
+      
+                
 
+                <div class="col-lg-9">
+
+                    <nav class="navbar navbar-expand-lg bg-dark navbar-dark p-3 p-lg-0">
+                        <div style="margin-top: 0%;" class="col-2">
+                              <img src="{% static 'images/logo.png' %}" alt="amazima restaurant logo"
+                                  height="100px" width="100px"
+                                  style="border-radius: 20px;">
+              
+                          </div>
+  
+                          <div  class="col-lg-3 bg-dark d-none d-lg-block" style="margin-left: 0%;">
+                              <a href="{% url 'index' %}" class="navbar-brand w-100 h-100 m-0 p-0 d-flex align-items-center ">
+                                  <h1 style="font-family: 'Times New Roman', Times, serif;" class="m-0 text-primary text-uppercase">Amazima Restaurant <br> <span> <h5 style="font-family: 'Times New Roman', Times, serif;color: gold;margin-left: 17%;">Luxury Redifined</h5> </span> </h1>
+                              </a>
+                          </div>
+                        <a href="{% url 'index' %}" class="navbar-brand d-block d-lg-none">
+                          <h1 
+               style="font-family: 'Times New Roman', Times, serif;" class="m-0 text-primary text-uppercase">Amazima Restaurant</h1>
+                        </a>
+                        <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                          <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div style="margin-left: 37%;" class="collapse navbar-collapse justify-content-between bg-transparent" id="navbarCollapse">
+                          <div class="navbar-nav mr-auto py-0">
+                            <a href="{% url 'index' %}" class="nav-item nav-link" onclick="home">Home</a>
+                            <a id="about" href="{% url 'about' %}" class="nav-item nav-link " onclick="about">About</a>
+                            <a id="services" href="{% url 'service' %}" class="nav-item nav-link" onclick="services">Services</a>
+                            <a id="contact" href="{% url 'contact' %}" class="nav-item nav-link" onclick="contact">Contact</a>
+                            {% comment %} <a id="contact" href="" class="nav-item nav-link" onclick="contact">Sign Up</a> {% endcomment %}
+                          </div>
+                          <ul class="navbar-nav mb-lg-0">
+                            <li class="nav-item">
+                              <a href="{% url 'sign_in' %}" class="btn btn-sm btn-light rounded py-2 px-4">LogIn</a>
+                            </li>
+                            <li class="nav-item">
+                              <a href="{% url 'sign_up' %}" class="btn btn-sm btn-outline-light rounded py-2 px-4">SignUp</a>
+                            </li>
+                          </ul>
+                        </div>
+                      </nav>
+                </div>
+            </div>
+        </div>
+        {% endif %}   
 
         <!-- Page Header Start -->
         <div class="container-fluid page-header mb-5 p-0" style="background-image: url({% static 'images/dining.png' %});">
@@ -53,8 +103,7 @@
                     <h1 class="display-3 text-white mb-3 animated slideInDown">Services</h1>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb justify-content-center text-uppercase">
-                            <li class="breadcrumb-item"><a href="#">Home</a></li>
-                            <li class="breadcrumb-item"><a href="#">Pages</a></li>
+                            <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
                             <li class="breadcrumb-item text-white active" aria-current="page">Services</li>
                         </ol>
                     </nav>
@@ -145,49 +194,79 @@
 
 
         <!-- Testimonial Start -->
-        <div class="container-xxl testimonial mt-5 py-5 bg-dark wow zoomIn" data-wow-delay="0.1s" style="margin-bottom: 90px;">
-            <div class="container">
-                <div class="owl-carousel testimonial-carousel py-5">
-                    <div class="testimonial-item position-relative bg-white rounded overflow-hidden">
-                        <p>Tempor stet labore dolor clita stet diam amet ipsum dolor duo ipsum rebum stet dolor amet diam stet. Est stet ea lorem amet est kasd kasd et erat magna eos</p>
-                        <div class="d-flex align-items-center">
-                            <img class="img-fluid flex-shrink-0 rounded" src="img/testimonial-1.jpg" style="width: 45px; height: 45px;">
-                            <div class="ps-3">
-                                <h6 class="fw-bold mb-1">Client Name</h6>
-                                <small>Profession</small>
+        <div class="container p-0 mb-5">
+            <div class=" justify-content-center">
+                  <h1 class="text-center">
+                        TESTIMONIALS
+                  </h1>
+            </div>
+            <div id="testimonial" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <!-- <div class="carousel-item ">
+                        <img class="w-100" src="{% static 'images/food3.jpg' %}" height="800" width='400' alt="Image">
+                        <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
+                            <div class="p-3" style="max-width: 700px;">
+                                <h6 class="section-title text-white text-uppercase mb-3 animated slideInDown">Luxury Redifined</h6>
+                                <h1 class="display-3 text-white mb-4 animated slideInDown">Discover A Brand Luxurious Hotel</h1>
+                                <a href="" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Our Menu</a>
+                                <a href="" class="btn btn-light py-md-3 px-md-5 animated slideInRight">Order a Meal</a>
                             </div>
                         </div>
-                        <i class="fa fa-quote-right fa-3x text-primary position-absolute end-0 bottom-0 me-4 mb-n1"></i>
+                    </div> -->
+                    
+                    <div class="carousel-item active col-lg-4 col-md-6 wow " data-wow-delay="0.4s">
+                        <a class="service-item rounded" href="">
+                            <div class="service-icon bg-transparent border rounded p-1">
+                                <div class="w-100 h-100 border rounded d-flex align-items-center justify-content-center">
+                                    <img src="{% static 'images/testimonial-1.jpg' %}">
+                                </div>
+                            </div>
+                            <h5 class="mb-3">JEREMY</h5>
+                            <p class="text-body mb-0">Erat ipsum justo amet duo et elitr dolor, est duo duo eos lorem sed diam stet diam sed stet lorem.</p>
+                        </a>
                     </div>
-                    <div class="testimonial-item position-relative bg-white rounded overflow-hidden">
-                        <p>Tempor stet labore dolor clita stet diam amet ipsum dolor duo ipsum rebum stet dolor amet diam stet. Est stet ea lorem amet est kasd kasd et erat magna eos</p>
-                        <div class="d-flex align-items-center">
-                            <img class="img-fluid flex-shrink-0 rounded" src="img/testimonial-2.jpg" style="width: 45px; height: 45px;">
-                            <div class="ps-3">
-                                <h6 class="fw-bold mb-1">Client Name</h6>
-                                <small>Profession</small>
+
+                    
+
+                     <div class="carousel-item col-lg-4 col-md-6 " data-wow-delay="0.4s">
+                        <a class="service-item rounded" href="">
+                            <div class="service-icon bg-transparent border rounded p-1">
+                                <div class="w-100 h-100 border rounded d-flex align-items-center justify-content-center">
+                                    <img src="{% static 'images/testimonial-3.jpg' %}">
+                                </div>
                             </div>
-                        </div>
-                        <i class="fa fa-quote-right fa-3x text-primary position-absolute end-0 bottom-0 me-4 mb-n1"></i>
+                            <h5 class="mb-3">DAVID</h5>
+                            <p class="text-body mb-0">Erat ipsum justo amet duo et elitr dolor, est duo duo eos lorem sed diam stet diam sed stet lorem.</p>
+                        </a>
                     </div>
-                    <div class="testimonial-item position-relative bg-white rounded overflow-hidden">
-                        <p>Tempor stet labore dolor clita stet diam amet ipsum dolor duo ipsum rebum stet dolor amet diam stet. Est stet ea lorem amet est kasd kasd et erat magna eos</p>
-                        <div class="d-flex align-items-center">
-                            <img class="img-fluid flex-shrink-0 rounded" src="img/testimonial-3.jpg" style="width: 45px; height: 45px;">
-                            <div class="ps-3">
-                                <h6 class="fw-bold mb-1">Client Name</h6>
-                                <small>Profession</small>
+                    <div class="carousel-item col-lg-4 col-md-6 " data-wow-delay="0.4s">
+                        <a class="service-item rounded" href="">
+                            <div class="service-icon bg-transparent border rounded p-1">
+                                <div class="w-100 h-100 border rounded d-flex align-items-center justify-content-center">
+                                    <img src="{% static 'images/testimonial-2.jpg' %}">
+                                </div>
                             </div>
-                        </div>
-                        <i class="fa fa-quote-right fa-3x text-primary position-absolute end-0 bottom-0 me-4 mb-n1"></i>
+                            <h5 class="mb-3">MAC</h5>
+                            <p class="text-body mb-0">Erat ipsum justo amet duo et elitr dolor, est duo duo eos lorem sed diam stet diam sed stet lorem.</p>
+                        </a>
                     </div>
                 </div>
+                <button class="carousel-control-prev " type="button" data-bs-target="#testimonial"
+                    data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon " style="background-color: rgb(1, 1, 19,0.5);" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next " type="button" data-bs-target="#testimonial"
+                    data-bs-slide="next">
+                    <span class="carousel-control-next-icon  " style="background-color: black;" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
             </div>
         </div>
         <!-- Testimonial End -->
 
 
-        {% include 'news_letter.html'%}
+        <!--{% include 'news_letter.html'%} -->
         
 
         {% include 'footer.html' %}

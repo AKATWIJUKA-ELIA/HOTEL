@@ -40,11 +40,12 @@ class Customers(AbstractBaseUser , PermissionsMixin):
 
      
 class Products(models.Model):
-      product_image = models.ImageField(upload_to='media/products')
+      product_image = models.ImageField(upload_to='products')
       product_id = models.AutoField(primary_key=True,unique=True)
       product_name = models.CharField(max_length=255)
       product_price = models.DecimalField(max_digits=10, decimal_places=2)
       product_description = models.CharField(max_length=255)
+      product_cartegory = models.CharField(max_length=255,default='breakfast')
 
 class Orders(models.Model):
       order_id = models.CharField(max_length=255,primary_key=True)
@@ -63,7 +64,7 @@ class Cart(models.Model):
       Cart_price = models.DecimalField(max_digits=10, decimal_places=2)            
       Cart_description = models.CharField(max_length=255)
       quantity = models.IntegerField(default=1)
-      Cart_amount = models.DecimalField(default=1,max_digits=10,decimal_places=2)
+      Cart_amount = models.IntegerField(default=1)
       def save(self, *args, **kwargs):
         # Update Cart_amount based on Cart_price and quantity
         self.Cart_amount = self.Cart_price * self.quantity

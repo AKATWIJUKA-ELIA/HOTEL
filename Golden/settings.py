@@ -12,10 +12,18 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import os
+import environ
+import dj_database_url
+
+
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+env = environ.Env()
+
+environ.Env.read_env()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -68,7 +76,7 @@ AUTH_USER_MODEL = 'gold.Customers'
 
 ROOT_URLCONF = 'Golden.urls'
 
-# MEDIA_URL = '/media/'
+MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 
@@ -90,7 +98,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'Golden.wsgi.application'
 
-
+ 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
@@ -99,7 +107,26 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
+    
 }
+# DATABASES = {
+#     'default': {
+#           'ENGINE': 'django.db.backends.postgresql',
+#           'NAME': 'railway',
+#           'USER': 'postgres',
+#           'PASSWORD': 'udbIvTLwSaNrEhbGVwQgKWuBbJeDhwJo',
+#           'HOST': 'junction.proxy.rlwy.net',
+#           'PORT': '45993',
+          
+#     }
+    
+# }
+
+
+# DATABASES = {
+#       'default': dj_database_url.parse(env('DATABASE_URL'))
+#       }
+
 
 
 # Password validation

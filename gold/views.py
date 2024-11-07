@@ -6,6 +6,11 @@ from django.core import serializers
 from django.http import JsonResponse
 from django.db.models import Sum
 import requests
+from django.conf import settings
+import smtplib
+import ssl
+from email.message import EmailMessage
+from django.core.mail import send_mail
 
 
 
@@ -27,10 +32,13 @@ def index(request):
       if request.user.is_authenticated:
             return redirect('userpage')
       else:
-            data = serializers.serialize("python",Products.objects.all() )
+            data = serializers.serialize("python",Products.objects.filter(product_cartegory='drinks'))
+            lunch = serializers.serialize("python",Products.objects.filter(product_cartegory='Lunch'))
             print(data)
             # items_on_cart = Cart.objects.count()
             context = {'data':data,
+                       'lunch':lunch,
+                       'MEDIA_URL': settings.MEDIA_URL,
                   #      'items_on_cart':items_on_cart,
                   } 
             
@@ -41,7 +49,8 @@ def index(request):
 def userpage(request):
       if request.user.is_authenticated:
             try:
-                  data = serializers.serialize("python",Products.objects.all() )
+                  data = serializers.serialize("python",Products.objects.filter(product_cartegory='drinks'))
+                  lunch = serializers.serialize("python",Products.objects.filter(product_cartegory='Lunch'))
                   # data = Products.objects.all() 
                   items_on_cart =  Cart.objects.all().filter(cart_user_id=request.user.Customer_id)
             except Cart.DoesNotExist:
@@ -52,6 +61,8 @@ def userpage(request):
             finally:
                   # items_on_cart = Cart.objects.count()
                   context = {'data':data,
+                             'lunch':lunch,
+                             'MEDIA_URL': settings.MEDIA_URL,
                              'items_on_cart':items_on_cart.count(),
                               'username':request.user.username
                               }
@@ -67,12 +78,13 @@ def admin(request):
             product_name = request.POST['product_name']
             price = request.POST['price']
             product_description  = request.POST['product_description']
+            product_cartegory  = request.POST['cartegory']
             product_image = request.FILES.get('image')
             
             # print(request.FILES)
             print(product_image)
             
-            new_product = Products.objects.create(product_name=product_name,product_price=price,product_description=product_description,product_image=product_image)
+            new_product = Products.objects.create(product_name=product_name,product_cartegory=product_cartegory,product_price=price,product_description=product_description,product_image=product_image)
             new_product.save() 
       return render(request, 'admin.html',context=context)
 
@@ -82,8 +94,7 @@ def delete(request):
             product = Products.objects.get(product_id=product_id)
             product.delete()
             messages.info(request,  'Product deleted successfully')
-
-      return render(request, 'delete.html')
+            return render(request, 'admin.html')
 
 
 def service(request):
@@ -203,7 +214,7 @@ def Add_Item_to_cart(request):
                 )
                 newcart.save()
                 messages.success(request, 'Product successfully added to cart')
-                return render(request, 'index.html')
+                return render(request, 'userpage.html')
         
         return render(request, 'index.html')
     else:
@@ -270,10 +281,7 @@ def delete_from_cart(request):
             message_text = "Product deleted successfully"
             success = True
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                  return JsonResponse({
-                'message': message_text,
-                'success': success
-            })
+                  return JsonResponse({'success': True,'message': message_text,})
       return redirect('cart')
 
 
@@ -417,3 +425,67 @@ def news_letter(request):
                   new.save()
                   messages.info(request, "Thank you for Subscribing")
             return render(request,'index.html')
+      
+# =============S E N D   AN   E M A I L==========
+def Send_email(request):
+      if request.user.is_authenticated:
+            try:
+                  password = 'hhyx mfca zpvo ckof'
+                  if request.method == "POST":
+                        subject = request.POST["sub"]
+                        message = request.POST["mes"]
+                        sender_email = request.POST["your_email"]
+
+
+                        server_email = 'eliaakjtrnq@gmail.com'
+                        email_password = password
+                        subject = subject
+                        email_receiver = 'eliatranquil@gmail.com'
+                        body = message + sender_email
+
+                        em = EmailMessage()
+                        em['from'] = server_email
+                        em['To'] = email_receiver
+                        em['subject'] = subject
+                        em.set_content(body)
+
+                        context = ssl.create_default_context()
+                        with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as smtp:
+                              smtp.login(server_email, email_password)
+                              smtp.sendmail(server_email, email_receiver, em.as_string())
+                        messages.info(request, "S U C C E S S  !", "Your Message has been Successfully sent, we will respond ASAP")
+                        return redirect('userpage')
+            except Exception as e:
+                  messages.error(request,'Error, Check your Internet connection and try again')
+                  return redirect('userpage')       
+      else:
+            try:
+                  if request.method == "POST":
+                        subject = request.POST["sub"]
+                        message = request.POST["mes"]
+                        sender_email = request.POST["your_email"]
+
+
+                        server_email = 'eliaakjtrnq@gmail.com'
+                        email_password = password
+                        subject = subject
+                        email_receiver = 'eliatranquil@gmail.com'
+                        body = message + sender_email
+
+                        em = EmailMessage()
+                        em['from'] = server_email
+                        em['To'] = email_receiver
+                        em['subject'] = subject
+                        em.set_content(body)
+
+                        context = ssl.create_default_context()
+                        with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as smtp:
+                              smtp.login(server_email, email_password)
+                              smtp.sendmail(server_email, email_receiver, em.as_string())
+                        messages.info(request, "S U C C E S S  !", "Your Message has been Successfully sent, we will respond ASAP")
+                        return redirect('userpage')
+            except Exception as e:
+                  messages.error(request,'Error, Check your Internet connection and try again')
+                  return render(request,'contact.html')
+      return  render(request,'contact.html')
+            

@@ -12,7 +12,7 @@ urlpatterns =[
     path('sign_up/', views.sign_up,name="sign_up"),
     path('sign_in/', views.sign_in,name="sign_in"),
     path('log_out/', views.log_out,name="log_out"),
-    path('/', views.userpage,name="userpage"),
+    path('home/', views.userpage,name="userpage"),
     path('admini/', views.admin,name="admin"),
     path('delete/', views.delete,name="delete"),
     path('delete_from_cart/', views.delete_from_cart,name="delete_from_cart"),
@@ -22,6 +22,7 @@ urlpatterns =[
     path('newsletter/', views.news_letter,name="news_letter"),
     path('Add_Item_to_cart/', views.Add_Item_to_cart,name="Add_Item_to_cart"),
     path('payments/', views.payments,name="payments"),
+    path('Send_email/', views.Send_email,name="Send_email"),
     
 ]
 if settings.DEBUG:

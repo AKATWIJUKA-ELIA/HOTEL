@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect,get_object_or_404
-from gold.models import News_letter, Customers,Products,Orders,Cart
+from gold.models import News_letter, Customers,Products,Orders,Cart,Admin
 from django.contrib import messages
 from django.contrib.auth import authenticate, login,logout
 from django.core import serializers
@@ -34,10 +34,12 @@ def index(request):
       else:
             data = serializers.serialize("python",Products.objects.filter(product_cartegory='drinks'))
             lunch = serializers.serialize("python",Products.objects.filter(product_cartegory='Lunch'))
+            salad = serializers.serialize("python",Products.objects.filter(product_cartegory='salad'))
             print(data)
             # items_on_cart = Cart.objects.count()
             context = {'data':data,
                        'lunch':lunch,
+                       'salad':salad,
                        'MEDIA_URL': settings.MEDIA_URL,
                   #      'items_on_cart':items_on_cart,
                   } 
@@ -51,10 +53,12 @@ def userpage(request):
             try:
                   data = serializers.serialize("python",Products.objects.filter(product_cartegory='drinks'))
                   lunch = serializers.serialize("python",Products.objects.filter(product_cartegory='Lunch'))
+                  salad = serializers.serialize("python",Products.objects.filter(product_cartegory='salad'))
                   # data = Products.objects.all() 
                   items_on_cart =  Cart.objects.all().filter(cart_user_id=request.user.Customer_id)
             except Cart.DoesNotExist:
                   context = {'data':data,
+                             
                         'username':request.user.username
                         }
                   return  render(request, 'userpage.html',context)
@@ -62,6 +66,7 @@ def userpage(request):
                   # items_on_cart = Cart.objects.count()
                   context = {'data':data,
                              'lunch':lunch,
+                             'salad':salad,
                              'MEDIA_URL': settings.MEDIA_URL,
                              'items_on_cart':items_on_cart.count(),
                               'username':request.user.username
@@ -70,31 +75,94 @@ def userpage(request):
                    
       # print(items_on_cart)
       return  render(request, 'userpage.html',context=context)
-
+def admin_signup(request):
+      if request.method == "POST":
+            username = request.POST['username']
+            email = request.POST['email']
+            password = request.POST['password']
+            confirm_password = request.POST.get('confirm_password')
+            if password == confirm_password:
+                  if Admin.objects.filter(username = username).exists():
+                        messages.error(request,"Username already exists.")
+                        return render(request, 'administrator/signup.html')
+                  
+                  elif Admin.objects.filter(email = email).exists():
+                        messages.error(request,"email already exists.")
+                        return render(request, 'administrator/signup.html')   
+                  else:
+                        NewAdmin = Admin.objects.create(username=username,email=email,password=confirm_password)
+                        # NewAdmin.set_password(confirm_password)
+                        NewAdmin.save()
+                        
+                        user = authenticate(username = username, password=password)
+                        if user is not None:
+                              login(request, user)
+                              return redirect('admin') 
+            
+            else:
+                  messages.error(request,"Passwords do not match.")
+                  return render(request, 'administrator/signup.html')
+      return render(request, 'administrator/signup.html')      
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+def admin_login(request):
+      if request.method =='POST':
+            username = request.POST['username']
+            password = request.POST['password']
+            user = authenticate(username = username, password=password)
+            if user is not None:
+                  login(request, user)
+                  return redirect('admin')
+            else:
+                  messages.error(request,"Invalid username or password.")
+                  return render(request, 'administrator/login.html')
+      return render(request, 'administrator/login.html')      
+            
+                  
 def admin(request):
-      data = serializers.serialize("python",Products.objects.all() )   
-      context = {'data':data,}
-      if request.method == 'POST':
-            product_name = request.POST['product_name']
-            price = request.POST['price']
-            product_description  = request.POST['product_description']
-            product_cartegory  = request.POST['cartegory']
-            product_image = request.FILES.get('image')
+      if request.user.is_authenticated:
             
-            # print(request.FILES)
-            print(product_image)
-            
-            new_product = Products.objects.create(product_name=product_name,product_cartegory=product_cartegory,product_price=price,product_description=product_description,product_image=product_image)
-            new_product.save() 
+            data = serializers.serialize("python",Products.objects.all() ) 
+            available_products = Products.objects.count() 
+            context = {'data':data,
+                       'username':request.user,
+                  'available_products':available_products,
+                  'MEDIA_URL': settings.MEDIA_URL,}
+            if request.method == 'POST':
+                  product_name = request.POST['product_name']
+                  price = request.POST['price']
+                  product_description  = request.POST['product_description']
+                  product_cartegory  = request.POST['cartegory']
+                  product_image = request.FILES.get('image')
+                  
+                  # print(request.FILES)
+                  print(product_image)
+                  
+                  new_product = Products.objects.create(product_name=product_name,product_cartegory=product_cartegory,product_price=price,product_description=product_description,product_image=product_image)
+                  new_product.save() 
       return render(request, 'admin.html',context=context)
 
 def delete(request):
       if request.method == 'POST':
             product_id = request.POST['product_id']
+            print(product_id)
             product = Products.objects.get(product_id=product_id)
             product.delete()
             messages.info(request,  'Product deleted successfully')
             return render(request, 'admin.html')
+      
+      
+def update(request):
+      if request.method == 'POST':
+            product_id = request.POST['product_id']
+            product = Products.objects.get(product_id=product_id)
+            product.product_name = request.POST['product_name']
+            product.product_price = request.POST['price']
+            product.product_description = request.POST['product_description']
+            product.product_cartegory = request.POST['cartegory']
+            product.product_image = request.FILES.get('image')
+            product.save()
+            messages.info(request, 'product updated successfully')
+            return redirect('admini')
 
 
 def service(request):
@@ -185,12 +253,12 @@ def cart(request):
                   'cart_item':cart_item,
                   'total':total_sum,
                   }
-      return render(request, 'cart.html', context=context)
+      return render(request, 'Cart.html', context=context)
 ###==========================================######
 #           A D D I N G   I T E M   TO  C A R T
 #============================================######
 def Add_Item_to_cart(request):
-    if request.user.is_authenticated:
+      if request.user.is_authenticated:
         name = request.user
         customer = Customers.objects.get(username=name)
         
@@ -216,8 +284,8 @@ def Add_Item_to_cart(request):
                 messages.success(request, 'Product successfully added to cart')
                 return render(request, 'userpage.html')
         
-        return render(request, 'index.html')
-    else:
+      #   return render(request, 'index.html')
+      else:
         messages.error(request, 'You must have an account to be able to add to cart')
         return render(request, 'sign_in.html')
       
@@ -308,29 +376,29 @@ def payments(request):
             headers = {
                         'Accept': '*/* ',
                         'Content-Type': 'application/json',
-                        'X-Country': 'UG',
-                        'X-Currency': 'UGX',
-                        'Authorization': '',
-                        'x-signature': 'MGsp*****************Ag==',
-                        'x-key':       'd53a900e-848a-4377-a2a1-14f6470f8e44' 
+                        # 'X-Reference-Id': 'e4db4465-eb94-47ea-9176-3058b36a5716',
+                        'X-Target-Environment': 'sandbox',
+                        'Authorization': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSMjU2In0.eyJjbGllbnRJZCI6ImNhZTdhYTVhLWVhOTYtNDU0ZC1hNjYxLWE0OWQ2OWNiY2MzMSIsImV4cGlyZXMiOiIyMDI0LTExLTExVDA4OjA0OjE4LjczNyIsInNlc3Npb25JZCI6IjA1MWFhMDE2LTY1Y2EtNGFjMS04ZDQzLTU5MDYyZmJkMWFjMiJ9.joApdPs-2Ry8MuFnKSX7lzvz4POhSGGCrICCUz5W2I8v2rEIUceuoIEjNqljeWPyx0axw2HHbdFfD00-75RhN1D3-DU3mskONP3HgYfYjBx93EsmHNRQymdm-XaEiaxXuHSKB32nGDq2faEHu_r9iBxaK3SX7TKy34OIsDcBZMBPWbEQ3VZHuy_9IOZBLtMEc600WwafDYyI3s-lPmk8gKTNzukzmJVnEu5ci1-7yo8VHKErL9N5CoAcxZWu8Nf5wMUuvr-E-K0VKa2wkzPZrGltDGdk7jX41hPaQSUsm8qVj7vB7Q1Gp8fqGfDgEzluBTpAxqChNbfnV-NO4VS7iA',
+                        'Ocp-Apim-Subscription-Key': '68569c86f67147ac8e254abbf94bfeb1',
                         }
             
-            data = {
-                  "reference": "Testing transaction",
-                  "subscriber": {
-                        "country": "UG",
-                        "currency": "UGX",
-                        "msisdn": phone_number
+            body = {
+                  "amount": "10",
+                  "currency": "EUR",
+                  "externalId": "123456",
+                  "payer": {
+                        "partyIdType": "MSISDN",
+                        "partyId": "654321"
                   },
-                  "transaction": {
-                        "amount": total_sum,
-                        "country": "UG",
-                        "currency": "UGX",
-                        "id": "34343453"
+                  "payerMessage": "pay for a product",
+                  "payeeNote": "payer note"
                   }
-                  }
-            r = requests.post('https://openapiuat.airtel.africa/merchant/v2/payments/', data=data,  params={},headers = headers)
-            print(r.json())
+            params={
+                  "referenceId":'c924b2b1-948d-4310-a9b7-15a6c8cfec30'
+            }
+            
+            r = requests.get('https://sandbox.momodeveloper.mtn.com/collection/v1_0/requesttopay/c924b2b1-948d-4310-a9b7-15a6c8cfec30', headers = headers)
+            print(r)
             
       return render(request, 'cart.html')      
                                            

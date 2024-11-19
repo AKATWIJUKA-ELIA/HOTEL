@@ -4,13 +4,13 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Golden View Hotel</title>
+    <title>Amazima | Cart</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="golden">
     <meta content="" name="hotel">
 
     <!-- Favicon -->
-    <link style="border-radius: 20px;" href="{% static 'images/images.jpg' %}" rel="icon">
+    <link style="border-radius: 20px;" href="{% static 'images/logo.png' %}" rel="icon">
 
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -53,7 +53,7 @@
 
                     <nav class="navbar navbar-expand-lg bg-dark navbar-dark p-3 p-lg-0">
                         <div style="margin-top: 0%;" class="col-2">
-                              <img src="{% static 'images/images.jpg' %}" alt="Golden view hotel logo"
+                              <img src="{% static 'images/logo.png' %}" alt="Amazima logo"
                                   height="100px" width="100px"
                                   style="border-radius: 20px;">
               
@@ -61,7 +61,7 @@
   
                           <div  class="col-lg-3 bg-dark d-none d-lg-block" style="margin-left: 0%;">
                               <a href="index.html" class="navbar-brand w-100 h-100 m-0 p-0 d-flex align-items-center ">
-                                  <h1 style="font-family: 'Times New Roman', Times, serif;" class="m-0 text-primary text-uppercase">Amazima Restaurant <br> <span> <h5 style="font-family: 'Times New Roman', Times, serif;color: gold;margin-left: 17%;">Luxury Redifined</h5> </span> </h1>
+                                  <h1 style="font-family: 'Times New Roman', Times, serif;" class="m-0 text-primary text-uppercase">Amazima Restaurant <br> </h1>
                               </a>
                           </div>
                         <a href="{% url 'index' %}" class="navbar-brand d-block d-lg-none">
@@ -73,10 +73,11 @@
                         </button>
                         <div style="margin-left: 37%;" class="collapse navbar-collapse justify-content-between bg-transparent" id="navbarCollapse">
                           <div class="navbar-nav mr-auto py-0">
-                            <a href="{% url 'index' %}" class="nav-item nav-link current" onclick="home">Home</a>
+                            <a href="{% url 'index' %}" class="nav-item nav-link " onclick="home">Home</a>
                             <a id="about" href="{% url 'about' %}" class="nav-item nav-link " onclick="about">About</a>
                             <a id="services" href="{% url 'service' %}" class="nav-item nav-link" onclick="services">Services</a>
                             <a id="contact" href="{% url 'contact' %}" class="nav-item nav-link" onclick="contact">Contact</a>
+                            <a id="user-welcome" href="{% url 'profile' %}" class="nav-item nav-link pointer text-truncate" >Hi-{{ username }}</a>
                             {% comment %} <a id="contact" href="" class="nav-item nav-link" onclick="contact">Sign Up</a> {% endcomment %}
                           </div>
                           <ul class="navbar-nav mb-lg-0">
@@ -130,15 +131,16 @@
                                           <div class="row room-item shadow rounded overflow-hidden">
                                                 
                                                 <div class="col position-relative d-flex justify-content-center align-items-center flex-column" style="height: 200px;">
-                                                      <img class="img-fluid" src="{{ instance.Cart_image.url }}" width="300" height="200" alt="food">
+                                                      <img class="img-fluid" src="{{ instance.cart_product.product_image.url }}" width="300" height="200" alt="food">
                                                 </div>
             
                                                 <div class=" col p-4 mt-2">
                                                       <div class="d-flex justify-content-between mb-3">
-                                                            <h5 class="mb-0">{{instance.Cart_name}}</h5>
+                                                            <h5 class="mb-0">{{instance.cart_product.product_name}}</h5>
                                                             <div class="ps-2">
-                                                                  
-                                                                  Ushs: {{ instance.Cart_amount }}
+                                                                  <h6 class="text-truncate">
+                                                                  Ushs: {{ instance.cart_amount }}
+                                                                  </h6>
                                                             </div>
                                                       </div>
                                                       {% comment %} <div class="d-flex mb-3">
@@ -146,14 +148,14 @@
                                                             <small class="border-end me-3 pe-3"><i class="fa fa-bath text-primary me-2"></i>2 Bath</small>
                                                             <small><i class="fa fa-wifi text-primary me-2"></i>Wifi</small>
                                                       </div> {% endcomment %}
-                                                      <p class="text-body mb-3">{{instance.Cart_description}}</p>
-                                                      <div class="d-flex justify-content-between">
+                                                      <p class="text-body mb-3">{{instance.cart_product.product_description}}</p>
+                                                      <div class="d-flex gap-3 justify-content-between">
       
                                                             {% comment %}
                                                               deleting an item from the cart
                                                             {% endcomment %}
-                                                            <a  class="btn btn-sm btn-danger rounded delete  py-2 px-4 " data-cart-id={{ instance.pk }} href=""> <i  class="bi bi-trash"></i> Remove </a>
-                                                            <div   class="" >
+                                                            <a  class="btn btn-sm btn-danger d-flex rounded delete  py-2 px-4 " data-cart-id={{ instance.pk }} href=""> <i  class="bi bi-trash"></i> Remove </a>
+                                                            <div   class="d-flex gap-3" >
                                                                   <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-dash-square-fill reduce-cart" data-cart-id={{ instance.pk }} style="cursor: pointer;" viewBox="0 0 16 16">
                                                                         <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm2.5 7.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1"/>
                                                                       </svg>
@@ -202,10 +204,12 @@
                                 <h5 class="mb-3 text-center">Cart Summary</h5>
                                 <h5 class="mb-3">Subtotal UGX : {{ total }}</h5>
                             </div>
-                            <button type="submit"   onclick="window.location.href='{% url 'payments' %}'" class="btn  btn-sm btn-outline-dark px-auto hover:bg-primary rounded" style="margin-left: 100px;margin-bottom: 5px;" >check out</button>
+                            <button type="submit"   onclick="window.location.href='{% url 'check_out' %}'" class="btn  btn-sm btn-outline-dark px-auto hover:bg-primary rounded" style="margin-left: 100px;margin-bottom: 5px;" >check out</button>
                         </div>
                     </div>
                 </div>
+
+                
 
 
 
@@ -260,6 +264,7 @@
                     console.error(errmsg);
                 }
             });
+            location.reload();
         });
 
         {% comment %} REDUCE THE QUANTITY ON CART {% endcomment %}
@@ -284,6 +289,7 @@
                     console.error(errmsg);
                 }
             });
+            location.reload();
         });  
 
 
@@ -317,7 +323,7 @@
 
             });
 
-      
+            location.reload();
               
             
         });  

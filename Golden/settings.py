@@ -12,10 +12,18 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import os
+# import environ
+# import dj_database_url
+
+
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# env = environ.Env()
+
+# environ.Env.read_env()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -24,14 +32,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-9mj8q%uv0&+pv%dcdb275#k_qa30#^5s1=em5)d$is%p(yp3b3'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['192.168.137.1',
-                 '127.0.0.1',
-                 '10.5.1.201',
-                  '10.5.1.134',
-                  '.vercelp.app',
-                  'amazimarestaurant.vercel.app'
+ALLOWED_HOSTS = [
+                  'lightsuccess.pythonanywhere.com',
+                  '127.0.0.1',
+                  '10.136.128.220',
+                  '10.5.1.201'
                  ]
 
 
@@ -55,6 +62,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -68,7 +76,7 @@ AUTH_USER_MODEL = 'gold.Customers'
 
 ROOT_URLCONF = 'Golden.urls'
 
-# MEDIA_URL = '/media/'
+MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 
@@ -80,6 +88,7 @@ TEMPLATES = [
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
+                'django.template.context_processors.media',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -100,6 +109,25 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# DATABASES = {
+#     'default': {
+#           'ENGINE': 'django.db.backends.postgresql',
+#           'NAME': 'railway',
+#           'USER': 'postgres',
+#           'PASSWORD': 'udbIvTLwSaNrEhbGVwQgKWuBbJeDhwJo',
+#           'HOST': 'junction.proxy.rlwy.net',
+#           'PORT': '45993',
+
+#     }
+
+# }
+
+
+# DATABASES = {
+#       'default': dj_database_url.parse(env('DATABASE_URL'))
+#       }
+
 
 
 # Password validation
@@ -137,7 +165,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+STATICFILES_STORAGES = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 

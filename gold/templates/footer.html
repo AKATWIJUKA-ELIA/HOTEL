@@ -53,20 +53,29 @@
                             
                             
                             <p class="text-black mb-0">
-								Amazima Restaurant is located in Western Uganda, 100m away from Ibanda Main street, Kitwe-Saaza, Ibanda Municipality in a calm and silent atmosphere giving you tranquil feel where our heart felt services await you..
-							</p>
+                              Amazima Restaurant is located on Plot 14 kampala road Russell lane eagen house <br> p.o.box 2271 kampala-uganda 
+                              
+					</p>
                         </div>
                         
                     </div>
                     <div class="col-md-6 col-lg-3">
                         <h6 class="section-title text-start text-primary text-uppercase mb-4">Contact</h6>
-                        <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>Location</p>
-                        <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+256787769021</p>
+                        <a href="https://www.google.com/maps/place/Amazima+Restaurant/@0.3118101,32.5829786,15z/data=!4m14!1m7!3m6!1s0x177dbd0d324bfa79:0x78ffe584d21a4838!2sAmazima+Restaurant!8m2!3d0.3118101!4d32.5829786!16s%2Fg%2F11tjy5yr64!3m5!1s0x177dbd0d324bfa79:0x78ffe584d21a4838!8m2!3d0.3118101!4d32.5829786!16s%2Fg%2F11tjy5yr64?entry=ttu&g_ep=EgoyMDI0MTExMy4xIKXMDSoASAFQAw%3D%3D"><p  class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>Location</p></a>
+                        <p class="mb-2">
+                              <i class="fa fa-phone-alt me-3"></i>
+                              <a href="tel:+256751283831" style="text-decoration: none; color: inherit;">+256 751 283831</a>
+                          </p>
+
+                          <p class="mb-2">
+                              <i class="fa fa-phone-alt me-3"></i>
+                              <a href="tel:+256789840004" style="text-decoration: none; color: inherit;">+256 789 840004</a>
+                          </p>
                         <a href='https://chat.whatsapp.com/IwEXyvBBFttIPFYaQKTuEP' target="_blank"> <p class="mb-2"><i class=""><i class=" text-white bi bi-chat"></i> </i>Join our whatsapp group</p><a/>
-                        <p class="mb-2"><i class="fa fa-envelope me-3" > </i> <a href="mailto: goldenviewhotelibanda@gmail.com">eliaakjtrnq@gmail.com</a></p>
+                        <p class="mb-2"><i class="fa fa-envelope me-3" > </i> <a href="mailto: amazimafoods@gmail.com">amazimafoods@gmail.com</a></p>
                         <div class="d-flex pt-2">
-                            <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-twitter"></i></a>
-                            <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-outline-light btn-social" href="https://x.com/AmazimaRest"><i class="fab fa-twitter"></i></a>
+                            <a class="btn btn-outline-light btn-social" href="https://www.facebook.com/p/Amazima-Restaurant-61565231297522/?locale=be_BY"><i class="fab fa-facebook-f"></i></a>
                             <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-instagram"></i></a>
                             <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-tripadvisor"></i></a>
                         </div>
@@ -76,7 +85,7 @@
                             <div class="col-md-6">
                                 <h6 class="section-title text-start text-primary text-uppercase mb-4">Company</h6>
                                 <a class="btn btn-link" href="{% url 'about' %}">About Us</a>
-                                <a class="btn btn-link" href="">Contact Us</a>
+                                <a class="btn btn-link" href="{% url 'contact' %}">Contact Us</a>
                                 {% comment %} <a class="btn btn-link" href="{% url 'contact' %}">Privacy Policy</a> {% endcomment %}
                                 {% comment %} <a class="btn btn-link" href="">Terms & Condition</a> {% endcomment %}
                                 <a class="btn btn-link" href="">leave a review</a>
@@ -89,7 +98,7 @@
                                 <a class="btn btn-link" href="">Breakfast</a>
                                 <a class="btn btn-link" href="">Lunch</a>
                                 <a class="btn btn-link" href="">Dinner</a>
-                                <a class="btn btn-link" href="">Menu</a>
+                                <a class="btn btn-link" href="{% static "doc/amazima new 24 menul copy.pdf" %}">Menu</a>
                             </div>
                         </div>
                     </div>

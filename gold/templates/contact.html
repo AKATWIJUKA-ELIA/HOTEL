@@ -54,7 +54,7 @@
 
                     <nav class="navbar navbar-expand-lg bg-dark navbar-dark p-3 p-lg-0">
                         <div style="margin-top: 0%;" class="col-2">
-                              <img src="{% static 'images/images.jpg' %}" alt="Golden view hotel logo"
+                              <img src="{% static 'images/logo.png' %}" alt="Amazima logo"
                                   height="100px" width="100px"
                                   style="border-radius: 20px;">
               
@@ -62,7 +62,7 @@
   
                           <div  class="col-lg-3 bg-dark d-none d-lg-block" style="margin-left: 0%;">
                               <a href="{% url 'index' %}" class="navbar-brand w-100 h-100 m-0 p-0 d-flex align-items-center ">
-                                  <h1 style="font-family: 'Times New Roman', Times, serif;" class="m-0 text-primary text-uppercase">Amazima Restaurant <br> <span> <h5 style="font-family: 'Times New Roman', Times, serif;color: gold;margin-left: 17%;">Luxury Redifined</h5> </span> </h1>
+                                  <h1 style="font-family: 'Times New Roman', Times, serif;" class="m-0 text-primary text-uppercase">Amazima Restaurant <br>  </h1>
                               </a>
                           </div>
                         <a href="{% url 'index' %}" class="navbar-brand d-block d-lg-none">
@@ -95,6 +95,20 @@
         </div>
         {% endif %}
 
+        {% if messages %}
+                                    {% for message in messages %}
+                                    <div class=" alert alert-{{message.tags }} alert-dismissible fade show" role ="alert" style= "text-align : center;background-color: rgb(171, 188, 188);">
+                                          <strong>
+                                          Info
+                                          </strong> {{ message }}
+                                          <button type ="button" class="btn-close" data-bs-dismiss="alert" aria-label="close">
+                                          
+                                          <span  aria-hidden="true"> &times;</span>
+                                          </button>
+                                    </div>
+                                    {% endfor %}
+                                    {% endif %}
+
         <!-- Page Header Start -->
         <div class="container-fluid page-header mb-5 p-0" style="background-image: url({% static 'images/5804452f_z.jpg' %});">
             <div class="container-fluid page-header-inner py-5">
@@ -123,47 +137,53 @@
                     <div class="col-12">
                         <div class="row gy-4">
                             <div class="col-md-4">
-                                <h6 class="section-title text-start text-primary text-uppercase">Booking</h6>
-                                <p><i class="fa fa-envelope-open text-primary me-2"></i>book@example.com</p>
+                                <h6 class="section-title text-start text-primary text-uppercase">Deliveries</h6>
+                                <p><i class="fa fa-envelope-open text-primary me-2"></i><a  href="mailto: amazimafoods@gmail.com"><span class="text-black">amazimafoods@gmail.com</span></a></p>
                             </div>
+
                             <div class="col-md-4">
-                                <h6 class="section-title text-start text-primary text-uppercase">General</h6>
-                                <p><i class="fa fa-envelope-open text-primary me-2"></i>info@example.com</p>
+                                <h6 class="section-title text-start text-primary text-uppercase">Call</h6>
+                                <p class="mb-2">
+                                    <i class="fa fa-phone-alt me-3"></i>
+                                    <a href="tel:+256789840004" style="text-decoration: none; color: inherit;">+256 789 840004</a>
+                                </p>
                             </div>
+                            {% comment %}
                             <div class="col-md-4">
                                 <h6 class="section-title text-start text-primary text-uppercase">Technical</h6>
                                 <p><i class="fa fa-envelope-open text-primary me-2"></i>tech@example.com</p>
-                            </div>
+                            </div> {% endcomment %}
                         </div>
                     </div>
                     <div class="col-md-6 wow fadeIn" data-wow-delay="0.1s">
-                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.8081466233525!2d30.498966199999995!3d-0.52939010000000004!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x19d8bde7e4245b53%3A0x47074a17d2c6372e!2sGolden%20View%20Hotel%20Ibanda!5e0!3m2!1sen!2sug!4v1716310894079!5m2!1sen!2sug" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d15959.036952307877!2d32.5829786!3d0.3118101!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x177dbd0d324bfa79%3A0x78ffe584d21a4838!2sAmazima%20Restaurant!5e0!3m2!1sen!2sug!4v1731402549233!5m2!1sen!2sug" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
                     </div>
                     <div class="col-md-6">
                         <div class="wow fadeInUp" data-wow-delay="0.2s">
-                            <form>
+                            <form method="POST" action="{% url 'Send_email' %}">
+                              {% csrf_token %}
                                 <div class="row g-3">
-                                    <div class="col-md-6">
+                                    {% comment %} <div class="col-md-6">
                                         <div class="form-floating">
                                             <input type="text" class="form-control" id="name" placeholder="Your Name">
                                             <label for="name">Your Name</label>
                                         </div>
-                                    </div>
+                                    </div> {% endcomment %}
                                     <div class="col-md-6">
                                         <div class="form-floating">
-                                            <input type="email" class="form-control" id="email" placeholder="Your Email">
+                                            <input type="email" class="form-control" name="your_email" id="email" placeholder="Your Email">
                                             <label for="email">Your Email</label>
                                         </div>
                                     </div>
                                     <div class="col-12">
                                         <div class="form-floating">
-                                            <input type="text" class="form-control" id="subject" placeholder="Subject">
+                                            <input type="text" class="form-control" id="subject" name="sub" placeholder="Subject">
                                             <label for="subject">Subject</label>
                                         </div>
                                     </div>
                                     <div class="col-12">
                                         <div class="form-floating">
-                                            <textarea class="form-control" placeholder="Leave a message here" id="message" style="height: 150px"></textarea>
+                                            <textarea class="form-control" placeholder="Leave a message here" name="mes" id="message" style="height: 150px"></textarea>
                                             <label for="message">Message</label>
                                         </div>
                                     </div>

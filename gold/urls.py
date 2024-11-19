@@ -13,6 +13,7 @@ urlpatterns =[
     path('sign_in/', views.sign_in,name="sign_in"),
     path('log_out/', views.log_out,name="log_out"),
     path('home/', views.userpage,name="userpage"),
+    path('profile/', views.profile,name="profile"),
     path('admini/', views.admin,name="admin"),
     path('admin-login/', views.admin_login,name="admin-login"),
     path('admin-signup/', views.admin_signup,name="admin_signup"),
@@ -20,13 +21,15 @@ urlpatterns =[
     path('update/', views.update,name="update"), # updating products
     path('delete_from_cart/', views.delete_from_cart,name="delete_from_cart"),
     path('cart/', views.cart,name="cart"),
+    path('checkout/', views.check_out,name="check_out"),
     path('increase_quantity/', views.increase,name="increase_quantity"),
     path('decrease_quantity/', views.decrease,name="decrease_quantity"),
     path('newsletter/', views.news_letter,name="news_letter"),
     path('Add_Item_to_cart/', views.Add_Item_to_cart,name="Add_Item_to_cart"),
     path('payments/', views.payments,name="payments"),
     path('Send_email/', views.Send_email,name="Send_email"),
-    
+    path('product/<int:pk>/', views.detail, name='detail'),
+
 ]
 if settings.DEBUG:
       urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -61,7 +61,7 @@
                     </div>
                     <div class="col-md-6 col-lg-3">
                         <h6 class="section-title text-start text-primary text-uppercase mb-4">Contact</h6>
-                        <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>Location</p>
+                        <a href="https://www.google.com/maps/place/Amazima+Restaurant/@0.3118101,32.5829786,15z/data=!4m14!1m7!3m6!1s0x177dbd0d324bfa79:0x78ffe584d21a4838!2sAmazima+Restaurant!8m2!3d0.3118101!4d32.5829786!16s%2Fg%2F11tjy5yr64!3m5!1s0x177dbd0d324bfa79:0x78ffe584d21a4838!8m2!3d0.3118101!4d32.5829786!16s%2Fg%2F11tjy5yr64?entry=ttu&g_ep=EgoyMDI0MTExMy4xIKXMDSoASAFQAw%3D%3D"><p  class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>Location</p></a>
                         <p class="mb-2">
                               <i class="fa fa-phone-alt me-3"></i>
                               <a href="tel:+256751283831" style="text-decoration: none; color: inherit;">+256 751 283831</a>
@@ -85,7 +85,7 @@
                             <div class="col-md-6">
                                 <h6 class="section-title text-start text-primary text-uppercase mb-4">Company</h6>
                                 <a class="btn btn-link" href="{% url 'about' %}">About Us</a>
-                                <a class="btn btn-link" href="">Contact Us</a>
+                                <a class="btn btn-link" href="{% url 'contact' %}">Contact Us</a>
                                 {% comment %} <a class="btn btn-link" href="{% url 'contact' %}">Privacy Policy</a> {% endcomment %}
                                 {% comment %} <a class="btn btn-link" href="">Terms & Condition</a> {% endcomment %}
                                 <a class="btn btn-link" href="">leave a review</a>
@@ -98,7 +98,7 @@
                                 <a class="btn btn-link" href="">Breakfast</a>
                                 <a class="btn btn-link" href="">Lunch</a>
                                 <a class="btn btn-link" href="">Dinner</a>
-                                <a class="btn btn-link" href="">Menu</a>
+                                <a class="btn btn-link" href="{% static "doc/amazima new 24 menul copy.pdf" %}">Menu</a>
                             </div>
                         </div>
                     </div>

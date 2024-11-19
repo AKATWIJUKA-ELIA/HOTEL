@@ -75,6 +75,33 @@ def userpage(request):
                    
       # print(items_on_cart)
       return  render(request, 'userpage.html',context=context)
+def profile(request):
+      if request.user.is_authenticated:
+            email = request.user.email
+            phone = request.user.phone_number
+            user = Customers.objects.get(Customer_id=request.user.Customer_id)
+            items_on_cart = Cart.objects.all().filter(cart_user_id=request.user.Customer_id).count()
+            orders = Orders.objects.filter(order_user=user)
+            print(orders)
+            # product_name = order.cart.cart_product.product_name
+            # product_price = order.product_price
+            # product_description = order.product_description
+            # product_image = order.product_image
+            
+            context={
+                  'email':email,
+                  'phone':phone,
+                  'username':request.user.username,
+                  'items_on_cart':items_on_cart,
+                  'orders':orders,
+                  # 'product_name':product_name,
+                  # 'product_price':product_price,
+                  # 'product_description':product_description,
+                  # 'product_image':product_image
+            }
+
+            return render(request, 'profile.html', context=context)
+
 def admin_signup(request):
       if request.method == "POST":
             username = request.POST['username']
@@ -139,7 +166,8 @@ def admin(request):
                   
                   new_product = Products.objects.create(product_name=product_name,product_cartegory=product_cartegory,product_price=price,product_description=product_description,product_image=product_image)
                   new_product.save() 
-      return render(request, 'admin.html',context=context)
+                  return redirect("admin")
+      return render(request, 'admin.html', context=context)      
 
 def delete(request):
       if request.method == 'POST':
@@ -162,7 +190,7 @@ def update(request):
             product.product_image = request.FILES.get('image')
             product.save()
             messages.info(request, 'product updated successfully')
-            return redirect('admini')
+            return redirect('admin')
 
 
 def service(request):
@@ -229,9 +257,10 @@ def about(request):
 
 def cart(request):
       if request.user.is_authenticated:
+            name = request.user
             try:
-                  # cart_item = serializers.serialize("python",Cart.objects.all() )
-                  cart_item =  Cart.objects.all().filter(cart_user_id=request.user.Customer_id)
+                  user = Customers.objects.get(Customer_id=request.user.Customer_id)
+                  cart_item =  Cart.objects.all().filter(cart_user=user)
                   
                   print(cart_item)
             except Cart.DoesNotExist:
@@ -240,7 +269,7 @@ def cart(request):
                         
             # items to sum up
             def get_total_cart_amount():
-                  total_amount = Cart.objects.filter(cart_user_id=request.user.Customer_id).aggregate(total=Sum('Cart_amount'))['total']
+                  total_amount = Cart.objects.filter(cart_user_id=request.user.Customer_id).aggregate(total=Sum('cart_amount'))['total']
                   return total_amount or 0
             # print(get_total_cart_amount(request.user.Customer_id))
             total_sum =  get_total_cart_amount()
@@ -251,9 +280,14 @@ def cart(request):
             items_on_cart = Cart.objects.all().filter(cart_user_id=request.user.Customer_id).count()
             context = {'items_on_cart':items_on_cart,
                   'cart_item':cart_item,
+                  'username':name,
                   'total':total_sum,
                   }
       return render(request, 'Cart.html', context=context)
+
+
+
+
 ###==========================================######
 #           A D D I N G   I T E M   TO  C A R T
 #============================================######
@@ -267,22 +301,18 @@ def Add_Item_to_cart(request):
             product = Products.objects.get(product_id=product_id)
 
             # Check if the product is already in the cart
-            if Cart.objects.filter(cart_user=customer, Product_id=product_id).exists():
+            if Cart.objects.filter(cart_user=customer, cart_product=product).exists():
                 messages.info(request, 'Product already added to cart, check your cart to increase the quantity')
                 return render(request, 'userpage.html')
             else:
                 # Create a new cart item
                 newcart = Cart.objects.create(
                     cart_user=customer,
-                    Product_id=product_id,
-                    Cart_image=product.product_image,
-                    Cart_name=product.product_name,
-                    Cart_price=product.product_price,
-                    Cart_description=product.product_description
+                    cart_product = product
                 )
                 newcart.save()
                 messages.success(request, 'Product successfully added to cart')
-                return render(request, 'userpage.html')
+                return redirect('userpage')
         
       #   return render(request, 'index.html')
       else:
@@ -303,11 +333,11 @@ def increase(request):
             cart_id = request.POST['cart_id']
             print(cart_id)
       
-            cart_object = Cart.objects.get(cart_user_id=customer.Customer_id, cart_id=cart_id)
+            cart_object = Cart.objects.get(cart_user=customer, cart_id=cart_id)
             # if cart_objects.cart_user_id == customer.Customer_id and cart_objects.cart_id == cart_id:
                   # new_object = Cart.objects.get(cart_user_id=customer.Customer_id, cart_id=cart_id)
             cart_object.quantity += 1
-            cart_object.Cart_amount = cart_object.Cart_price* cart_object.quantity
+            cart_object.cart_amount = cart_object.cart_product.product_price* cart_object.quantity
             cart_object.save()
             print(cart_object.quantity)
       return redirect('cart')
@@ -322,7 +352,7 @@ def decrease(request):
             cart_id = request.POST['cart_id']
             print(cart_id)
       
-            cart_object = Cart.objects.get(cart_user_id=customer.Customer_id, cart_id=cart_id)
+            cart_object = Cart.objects.get(cart_user=customer, cart_id=cart_id)
             # if cart_objects.cart_user_id == customer.Customer_id and cart_objects.cart_id == cart_id:
                   # new_object = Cart.objects.get(cart_user_id=customer.Customer_id, cart_id=cart_id)
             if cart_object.quantity > 1:
@@ -347,7 +377,6 @@ def delete_from_cart(request):
             cart_object.delete()
             messages.success(request,  "Product deleted successfully")
             message_text = "Product deleted successfully"
-            success = True
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                   return JsonResponse({'success': True,'message': message_text,})
       return redirect('cart')
@@ -400,7 +429,33 @@ def payments(request):
             r = requests.get('https://sandbox.momodeveloper.mtn.com/collection/v1_0/requesttopay/c924b2b1-948d-4310-a9b7-15a6c8cfec30', headers = headers)
             print(r)
             
-      return render(request, 'cart.html')      
+      return render(request, 'cart.html')
+
+
+
+###==========================================######
+#          C H E C K  O U T
+#============================================######
+def check_out(request):
+      if request.user.is_authenticated:
+            name = request.user
+            customer = Customers.objects.get(username=name)
+            # cart_id = request.POST.get('cart_id')
+            # print(cart_id)
+            
+            cart_object = Cart.objects.filter(cart_user_id=request.user.Customer_id)
+            print(cart_object)
+            
+            orders = [
+                  Orders(
+                        order_user=customer,
+                        cart = item,
+                  ) for item in cart_object
+            ]
+            
+            Orders.objects.bulk_create(orders)
+            
+      return redirect('cart')  
                                            
 
 ###==========================================######
@@ -557,3 +612,6 @@ def Send_email(request):
                   return render(request,'contact.html')
       return  render(request,'contact.html')
             
+def detail(request, pk):
+      detail = Products.objects.get(product_id=pk)
+      return render(request, 'preview.html', {'detail': detail})

@@ -53,29 +53,41 @@ class Products(models.Model):
       product_description = models.CharField(max_length=255)
       product_cartegory = models.CharField(max_length=255,default='breakfast')
 
-class Orders(models.Model):
-      order_id = models.CharField(max_length=255,primary_key=True)
-      customer_id = models.ForeignKey(Customers, on_delete=models.CASCADE)
-      product_id = models.ForeignKey(Products, on_delete=models.CASCADE)
-      Order_date = models.DateTimeField()
-      Total_cost = models.DecimalField(decimal_places=2, max_digits=10)
-      status = models.BooleanField(default=False)
+
       
 class Cart(models.Model):
-      cart_id = models.AutoField(primary_key=True, unique=True,default=None)
-      cart_user = models.ForeignKey(to=Customers, on_delete=models.CASCADE)
-      Product_id = models.IntegerField(default=None)
-      Cart_image = models.ImageField(upload_to='cart/')
-      Cart_name = models.CharField(max_length=255)
-      Cart_price = models.DecimalField(max_digits=10, decimal_places=2)            
-      Cart_description = models.CharField(max_length=255)
-      quantity = models.IntegerField(default=1)
-      Cart_amount = models.IntegerField(default=1)
-      def save(self, *args, **kwargs):
-        # Update Cart_amount based on Cart_price and quantity
-        self.Cart_amount = self.Cart_price * self.quantity
-        super(Cart,self).save(*args, **kwargs)
+    cart_id = models.AutoField(primary_key=True, unique=True)
+    cart_user = models.ForeignKey(to=Customers, on_delete=models.CASCADE)  # Link each cart to a customer (user)
+    cart_product = models.ForeignKey(Products, on_delete=models.CASCADE, related_name='cart_items')  # Link each cart to a product
+    quantity = models.PositiveIntegerField(default=1)  # Quantity of the product in the cart
+    cart_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)  # Total price for this cart item
+
+    def save(self, *args, **kwargs):
+        # Update cart amount based on product price and quantity
+        self.cart_amount = self.cart_product.product_price * self.quantity
+        super(Cart, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return f"Cart {self.cart_id} | User: {self.cart_user.username} | Product: {self.cart_product.product_name} | Quantity: {self.quantity}"
       
+class Orders(models.Model):
+    order_id = models.AutoField(primary_key=True)
+    order_user = models.ForeignKey(Customers, on_delete=models.CASCADE)  # The customer who placed the order
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name="orders")  # Link to the cart(s) associated with the order
+    order_date = models.DateTimeField(auto_now_add=True)  # When the order was placed
+    shipping_address = models.CharField(max_length=1024,null=True)  # Shipping address
+    payment_status = models.CharField(max_length=255,null=True, choices=[('pending', 'Pending'), ('paid', 'Paid'), ('failed', 'Failed')], default='pending')
+    order_status = models.CharField(max_length=255,null=True, choices=[('processing', 'Processing'), ('shipped', 'Shipped'), ('delivered', 'Delivered')], default='processing')
+    total_amount = models.DecimalField(max_digits=10,null=True, decimal_places=2)  # Total amount for the order
+
+    def __str__(self):
+        return f"Order {self.order_id} | User: {self.order_user.username} | Status: {self.order_status}"
+      
+    def calculate_total_amount(self):
+        # Sum the total amount for all products in the cart(s) related to the order
+        self.total_amount = self.cart.cart_amount
+        self.save()
+        
 class Payments(models.Model):
       payment_id = models.CharField(max_length=255,primary_key=True)
       customer_id = models.ForeignKey(Customers, on_delete=models.CASCADE)

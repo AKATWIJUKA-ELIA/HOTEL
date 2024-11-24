@@ -78,29 +78,51 @@ def userpage(request):
 def profile(request):
       if request.user.is_authenticated:
             email = request.user.email
+            address = request.user.address
             phone = request.user.phone_number
             user = Customers.objects.get(Customer_id=request.user.Customer_id)
             items_on_cart = Cart.objects.all().filter(cart_user_id=request.user.Customer_id).count()
             orders = Orders.objects.filter(order_user=user)
-            print(orders)
-            # product_name = order.cart.cart_product.product_name
-            # product_price = order.product_price
-            # product_description = order.product_description
-            # product_image = order.product_image
-            
+            # print(address)
             context={
                   'email':email,
+                  'address':address,
                   'phone':phone,
                   'username':request.user.username,
                   'items_on_cart':items_on_cart,
                   'orders':orders,
-                  # 'product_name':product_name,
-                  # 'product_price':product_price,
-                  # 'product_description':product_description,
-                  # 'product_image':product_image
             }
 
             return render(request, 'profile.html', context=context)
+               
+def edit_profile(request):
+      if request.user.is_authenticated:
+            if request.method == 'POST':
+                  email = request.POST['email']
+                  # print(email)
+                  phone = request.POST.get('phone')
+                  password = request.POST.get('password')
+                  address = request.POST.get("address")
+                  user = Customers.objects.get(Customer_id=request.user.Customer_id)
+                  if email == None:
+                        user.email = user.email
+                  else:
+                        user.email = email
+                  if phone == None:
+                        user.phone_number = user.phone_number
+                  else:
+                        user.phone_number = phone
+                  if password == None:
+                        user.password = user.password
+                  else:
+                        user.password = password
+                  if address == None:
+                        user.address = user.address
+                  else:
+                        user.address = address
+                  user.save()
+      return redirect('profile')
+
 
 def admin_signup(request):
       if request.method == "POST":

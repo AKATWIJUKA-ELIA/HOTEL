@@ -14,6 +14,7 @@ urlpatterns =[
     path('log_out/', views.log_out,name="log_out"),
     path('home/', views.userpage,name="userpage"),
     path('profile/', views.profile,name="profile"),
+    path('edit_profile/', views.edit_profile, name="edit_profile"),
     path('admini/', views.admin,name="admin"),
     path('admin-login/', views.admin_login,name="admin-login"),
     path('admin-signup/', views.admin_signup,name="admin_signup"),

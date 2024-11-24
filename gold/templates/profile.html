@@ -126,8 +126,7 @@
                                   <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="user" class="rounded-circle" width="150">
                                   <div class="mt-3">
                                     <h4>{{ username }}</h4>
-                                    <p class="text-secondary mb-1">Full Stack Developer</p>
-                                    <p class="text-muted font-size-sm">Bay Area, San Francisco, CA</p>
+                                   
                                     
                                   </div>
                                 </div>
@@ -137,41 +136,48 @@
                           </div>
                           <div class="col-md-8">
                             <div class="card mb-3">
-                              <div class="card-body">
-                                <div class="row">
-                                  <div class="col-sm-3">
-                                    <h6 class="mb-0">Email</h6>
-                                  </div>
-                                  <div class="col-sm-9 text-secondary">
-                                    {{email}}
-                                  </div>
-                                </div>
-                                <hr>
-                                <div class="row">
-                                  <div class="col-sm-3">
-                                    <h6 class="mb-0">Phone</h6>
-                                  </div>
-                                  <div class="col-sm-9 text-secondary">
-                                    {{phone}}
-                                  </div>
-                                </div>
-                                <hr>
-                              
-                                <div class="row">
-                                  <div class="col-sm-3">
-                                    <h6 class="mb-0">Address</h6>
-                                  </div>
-                                  <div class="col-sm-9 text-secondary">
-                                    Bay Area, San Francisco, CA
-                                  </div>
-                                </div>
-                                <hr>
-                                <div class="row">
-                                  <div class="col-sm-12">
-                                    <a class="btn btn-info "  href="">Edit</a>
-                                  </div>
-                                </div>
+
+                              <div class="px-1 ">
+                                    <div class="row">
+                                          <div class="col-lg-8 col-11 mx-auto">
+                                              <form role="form" method="post" action="{% url 'edit_profile' %}" enctype="multipart/form-data">
+                                                    {% csrf_token %}
+                                                    
+            
+                                                    <div class="form-floating" style='margin-bottom:10px'>
+                                                          <input type="text"  name="email" id="email"  class="form-control " placeholder="{{email}}" required>
+              
+                                                          <label for="email">{{email}}</label>
+                                                    </div>
+            
+                                                    <div class="form-floating" style='margin-bottom:10px'>
+            
+                                                          <input type="tel" name="phone" id="phone" class="form-control" placeholder="phone" required>
+              
+                                                          <label for="phone">{{phone}}</label>
+                                                      </div>
+            
+                                                    <div class="form-floating" style='margin-bottom:10px'>
+                                                          <input type="text" name="address" id="address"  class="form-control" placeholder="Address" required>
+              
+                                                          <label for="address">{{address}}</label>
+                                                      </div>
+            
+                                                  
+            
+                                                  <button type="submit" id='saveButton' class="btn custom-btn form-control mt-4 mb-3">
+                                                     Update
+                                                  </button>
+            
+                                                 
+            
+                                              </form>
+                                          </div>
+                                      </div>
                               </div>
+
+                              
+
                             </div>
               
                             
@@ -247,11 +253,7 @@
 
     <!-- Template Javascript -->
     <script src="{% static 'js/main.js' %}"></script>
-    {% comment %} <script>
-      function geekAlert() {
-            alert("Product successfully added to cart");
-        };
-    </script> {% endcomment %}
+    
     <script>
       
       $(document).on('click', '.add-cart', function(e) {
@@ -259,7 +261,7 @@
             
             // Get the product ID from the data attribute of the clicked button
             var product_id = $(this).data('product-id');
-        
+
             $.ajax({
                 type: 'POST',
                 url: '{% url "Add_Item_to_cart" %}',

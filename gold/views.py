@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect,get_object_or_404
-from gold.models import News_letter, Customers,Products,Orders,Cart,Admin
+from gold.models import News_letter, Customers,Products,Orders,Cart
 from django.contrib import messages
 from django.contrib.auth import authenticate, login,logout
 from django.core import serializers
@@ -128,19 +128,21 @@ def admin_signup(request):
       if request.method == "POST":
             username = request.POST['username']
             email = request.POST['email']
+            phone = request.POST['phone']
             password = request.POST['password']
             confirm_password = request.POST.get('confirm_password')
             if password == confirm_password:
-                  if Admin.objects.filter(username = username).exists():
+                  if Customers.objects.filter(username = username).exists():
                         messages.error(request,"Username already exists.")
                         return render(request, 'administrator/signup.html')
                   
-                  elif Admin.objects.filter(email = email).exists():
+                  elif Customers.objects.filter(email = email).exists():
                         messages.error(request,"email already exists.")
                         return render(request, 'administrator/signup.html')   
                   else:
-                        NewAdmin = Admin.objects.create(username=username,email=email,password=confirm_password)
-                        # NewAdmin.set_password(confirm_password)
+                        NewAdmin = Customers.objects.create(username=username,email=email,password=confirm_password,phone_number=phone,address="")
+                        NewAdmin.is_superuser = True
+                        NewAdmin.set_password(confirm_password)
                         NewAdmin.save()
                         
                         user = authenticate(username = username, password=password)
@@ -158,7 +160,7 @@ def admin_login(request):
             username = request.POST['username']
             password = request.POST['password']
             user = authenticate(username = username, password=password)
-            if user is not None:
+            if user is not None and user.is_superuser:
                   login(request, user)
                   return redirect('admin')
             else:
@@ -194,7 +196,23 @@ def admin(request):
                   new_product.save() 
                   return redirect("admin")
       return render(request, 'admin.html', context=context)      
-
+def admin_profile(request):
+      if request.user.is_authenticated:
+            email = request.user.email
+            address = request.user.address
+            phone = request.user.phone_number
+            user = Customers.objects.get(username=request.user)
+            orders = Orders.objects.filter(order_user=user)
+            # print(address)
+            context={
+                  'email':email,
+                  'address':address,
+                  'phone':phone,
+                  'username':request.user.username,
+                  'orders':orders,
+            }
+            return render(request, 'administrator/admin_profile.html', context=context)
+      
 def delete(request):
       if request.method == 'POST':
             product_id = request.POST['product_id']

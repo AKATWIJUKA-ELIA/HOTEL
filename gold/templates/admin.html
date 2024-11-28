@@ -18,7 +18,7 @@
         <h3 class="text-light mb-4">Sales Management</h3>
         <nav class="nav flex-column">
             <a href="#" class="nav-link active"><i class="fas fa-home me-2"></i> Dashboard</a>
-            <a href="#" class="nav-link"><i class="fas fa-user me-2"></i> Profile</a>
+            <a href="{% url 'admin_profile' %}" class="nav-link"><i class="fas fa-user me-2"></i> Profile</a>
             <a href="#" class="nav-link"><i class="fas fa-shopping-cart me-2"></i> Order</a>
             <a href="#" class="nav-link"><i class="fas fa-box me-2"></i> Product</a>
             <a href="#" class="nav-link"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
@@ -107,7 +107,7 @@
                         <td>{{ instance.pk }}</td>
                         <td>{{instance.fields.product_name}}</td>
                         <td>{{instance.fields.product_description}}</td>
-                        <td>{{ instance.fields.product_price }} </td>
+                        <td>{{ instance.fields.product_price }}shs </td>
                         <td> <img src="{{ MEDIA_URL }}{{ instance.fields.product_image }}" width='40' height='40' alt={{instance.fields.product_name}}> </td>
                         <td>
                             <button class="btn btn-primary update-btn " data-product-id={{ instance.pk }} data-bs-toggle="modal" data-bs-target="#videoModal">Edit</button>

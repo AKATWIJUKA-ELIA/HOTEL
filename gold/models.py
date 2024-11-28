@@ -6,10 +6,10 @@ from django.contrib.auth.models import UserManager
 class News_letter(models.Model):
     email = models.EmailField(blank=True,default=None)
     
-class Admin(models.Model):
-      email = models.EmailField(unique=True)
-      username = models.CharField(max_length=100,unique=True)
-      password = models.CharField(max_length=100)
+# class Admin(models.Model):
+#       email = models.EmailField(unique=True)
+#       username = models.CharField(max_length=100,unique=True)
+#       password = models.CharField(max_length=100)
       
 
 class CustomUserManager(UserManager):

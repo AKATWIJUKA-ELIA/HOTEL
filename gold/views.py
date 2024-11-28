@@ -172,9 +172,13 @@ def admin(request):
             
             data = serializers.serialize("python",Products.objects.all() ) 
             available_products = Products.objects.count() 
+            total_orders = Orders.objects.count()
+            total_customers = Customers.objects.count()
             context = {'data':data,
                        'username':request.user,
                   'available_products':available_products,
+                  'total_customers':total_customers,
+                  'total_orders':total_orders,
                   'MEDIA_URL': settings.MEDIA_URL,}
             if request.method == 'POST':
                   product_name = request.POST['product_name']
@@ -335,11 +339,8 @@ def Add_Item_to_cart(request):
                 newcart.save()
                 messages.success(request, 'Product successfully added to cart')
                 return redirect('userpage')
-        
-      #   return render(request, 'index.html')
       else:
-        messages.error(request, 'You must have an account to be able to add to cart')
-        return render(request, 'sign_in.html')
+            return render(request, 'sign_in.html')
       
       
       
@@ -474,8 +475,13 @@ def check_out(request):
                         cart = item,
                   ) for item in cart_object
             ]
-            
-            Orders.objects.bulk_create(orders)
+            for item in cart_object:
+                  if Orders.objects.filter(cart=item):
+                        # orders.remove(item)
+                        print('items already exists')
+                  else:
+                        Orders.objects.bulk_create(orders)
+                        
             
       return redirect('cart')  
                                            

@@ -171,12 +171,14 @@ def admin_login(request):
                   
 def admin(request):
       if request.user.is_authenticated:
-            
             data = serializers.serialize("python",Products.objects.all() ) 
-            available_products = Products.objects.count() 
+            
+            orders = Orders.objects.all()
+            available_products = Products.objects.count()
             total_orders = Orders.objects.count()
             total_customers = Customers.objects.count()
             context = {'data':data,
+                       'orders':orders,
                        'username':request.user,
                   'available_products':available_products,
                   'total_customers':total_customers,
@@ -195,7 +197,7 @@ def admin(request):
                   new_product = Products.objects.create(product_name=product_name,product_cartegory=product_cartegory,product_price=price,product_description=product_description,product_image=product_image)
                   new_product.save() 
                   return redirect("admin")
-      return render(request, 'admin.html', context=context)      
+      return render(request, 'admin.html', context=context)
 def admin_profile(request):
       if request.user.is_authenticated:
             email = request.user.email

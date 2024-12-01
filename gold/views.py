@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect,get_object_or_404
-from gold.models import News_letter, Customers,Products,Orders,Cart
+from gold.models import News_letter, Customers,Products,Orders,Cart,Gallery
 from django.contrib import messages
 from django.contrib.auth import authenticate, login,logout
 from django.core import serializers
@@ -663,3 +663,7 @@ def Send_email(request):
 def detail(request, pk):
       detail = Products.objects.get(product_id=pk)
       return render(request, 'preview.html', {'detail': detail})
+
+def gallery(request):
+      gallery = Gallery.objects.all()
+      return render(request, 'gallery.html', {'gallery': gallery})

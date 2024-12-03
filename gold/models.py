@@ -55,7 +55,7 @@ class Products(models.Model):
       
 class Gallery(models.Model):
       title = models.CharField(max_length=255,default=None)
-      image = models.ImageField(upload_to='media/gallery')
+      image = models.ImageField(upload_to='gallery')
 
       
 class Cart(models.Model):

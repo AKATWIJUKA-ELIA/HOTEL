@@ -21,6 +21,7 @@ urlpatterns =[
     path('admin-login/', views.admin_login,name="admin-login"),
     path('admin-signup/', views.admin_signup,name="admin_signup"),
     path('delete/', views.delete,name="delete"),# Deleting Products
+    path('delete-gal/', views.delete_gallery, name="delete_gallery"),
     path('update/', views.update,name="update"), # updating products
     path('delete_from_cart/', views.delete_from_cart,name="delete_from_cart"),
     path('cart/', views.cart,name="cart"),

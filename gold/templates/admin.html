@@ -71,6 +71,7 @@
             <a href="#order" id="orders_click" class="nav-link"><i class="fas fa-shopping-cart me-2"></i> Order</a>
             <a href="#AddProductModal" data-bs-toggle="modal" class="nav-link"><i class="fas fa-box me-2"></i> add Product</a>
             <a href="#" class="nav-link"><i class="fas fa-box me-2"></i> Customers</a>
+            <a href="#AddGalleryModal" data-bs-toggle="modal" class="nav-link"><i class="fas fa-box me-2"></i> Gallery</a>
             <a href="#" class="nav-link"><i class="fa-solid fa-comment"></i> FeedBack</a>
             <a href="{% url 'log_out' %}" class="nav-link"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
         </nav>
@@ -337,7 +338,117 @@
 
       
 
-      <div class="table-responsive mt-5 rounded-3" style=" height: 200px;overflow: hidden;  transition: height 1s;"  id="orders-table">
+      
+        {% comment %} <div class="table-responsive mt-5 rounded-3" style=" height: 200px;overflow: hidden;  transition: height 1s;"  id="orders-table">
+            <h3>ORDERS </h3>
+            <button id="see-all_orders" class="btn btn-success">see all</button>
+            <table class="table table-striped table-bordered table-hover table-dark rounded-3">
+                  <thead>
+                      <tr>
+                          <th>Order Id</th>
+                          <th>Customer</th>
+                          <th>Product name</th>
+                          <th>description</th>
+                          <th>Price</th>
+                          <th>image</th>
+                          <th>order status</th>
+                          <th>date ordered</th>
+                          <th>payment_status</th>
+                      </tr>
+                  </thead>
+                  
+                  
+                  
+                  <tbody>
+                      {% for order in orders %}
+                      <tr>
+                          <td>{{ order.pk }}</td>
+                          <td>{{order.order_user.username}}</td>
+                          <td>{{order.cart.cart_product.product_name}}</td>
+                          <td>{{order.cart.cart_product.product_description}}</td>
+                          <td>{{ order.cart.cart_product.product_price }}shs </td>
+                          <td> <img src="{{ MEDIA_URL }}{{ order.cart.cart_product.product_image }}" width='40' height='40' alt={{order.cart.cart_product.product_name}}> </td>
+                          <td>{{order.order_status}}</td>
+                          <td>{{order.order_date}}</td>
+                          <td> {{order.payment_status}} <td>
+                      </tr>
+                      {% endfor %}
+                      
+                  </tbody>
+            </table>
+      </div> {% endcomment %}
+
+      <!-- ===================== A D D I N G    TO   G A L L E R Y ========================-->
+
+      <div class="modal fade bd-example-modal-lg" id="AddGalleryModal" tabindex="-1" aria-labelledby="bd-example-modal-lg" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content rounded-0">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel"> ADD TO GALLERY </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- 16:9 aspect ratio -->
+                        <div class="ratio ratio-16x9">
+                              <div class="row">
+                                    <div class="col-lg-8 col-11 mx-auto">
+                                          <section class="sign-in-form section-padding">
+                                                <div class="container">
+                                                    <div class="row">
+                                    
+                                                        <div class="col-lg-8 mx-auto col-12">
+                                    
+                                                            <div class="row">
+                                                                <div class="col-lg-11 offset-0 flex">
+                                                                    <form role="form" method="post" action="{% url 'gallery' %}" enctype="multipart/form-data">
+                                                                          {% csrf_token %}
+                                    
+                                                                          <div class="form-floating" style='margin-bottom:10px;'>
+                                                                                <input type="text" name="title" id="title"  class="form-control " placeholder="title" required>
+                                    
+                                                                                <label for="title">title</label>
+                                                                          </div>
+                                    
+                                                                        <div class="form-floating my-4">
+                                                                            <input type="file" name="image" id="image"  class="form-control" placeholder="Image" required>
+                                    
+                                                                            <label for="image">Image</label>
+                                                                        </div>
+                                    
+                                                                        
+                                    
+                                                                        <button type="submit" class="btn btn-dark custom-btn form-control mt-4 mb-3">
+                                                                            Add product
+                                                                        </button>
+                                    
+                                                                       
+                                    
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                    
+                                                            
+                                                            
+                                                        </div>
+                                    
+                                                        
+                                                </div>
+                                            </section>
+
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+       
+
+      
+
+      
+        <div class="table-responsive mt-5 rounded-3" style=" height: 200px;overflow: hidden;  transition: height 1s;"  id="orders-table">
             <h3>ORDERS </h3>
             <button id="see-all_orders" class="btn btn-success">see all</button>
             <table class="table table-striped table-bordered table-hover table-dark rounded-3">
@@ -376,16 +487,14 @@
             </table>
       </div>
       
-      <div id="products-table" class="table-responsive rounded-3 mt-5" style=" height: 200px;overflow: hidden;  transition: height 0.3s;">
+      <div id="gallery-table" class="table-responsive rounded-3 mt-5" style=" height: 200px;overflow: hidden;  transition: height 0.3s;">
       <h3> Gallery </h3> 
-            <button id="see-all" class="btn btn-success">see all</button>
+            <button id="see-all_gallery" class="btn btn-success">see all</button>
             <table  class="table table-striped table-bordered table-hover table-dark rounded-3" >
                 <thead>
                     <tr>
                         <th>Product Id</th>
-                        <th>Product name</th>
-                        <th>description</th>
-                        <th>Price</th>
+                        <th>Title</th>
                         <th>image</th>
                         <th>Actions</th>
                     </tr>
@@ -394,15 +503,12 @@
                 
                 
                 <tbody >
-                    {% for instance in data %}
+                    {% for instance in gallery %}
                     <tr>
                         <td>{{ instance.pk }}</td>
-                        <td>{{instance.fields.product_name}}</td>
-                        <td>{{instance.fields.product_description}}</td>
-                        <td>{{ instance.fields.product_price }}shs </td>
-                        <td> <img src="{{ MEDIA_URL }}{{ instance.fields.product_image }}" width='40' height='40' alt={{instance.fields.product_name}}> </td>
+                        <td>{{instance.title}}</td>
+                        <td> <img src="{{ MEDIA_URL }}{{ instance.image }}" width='40' height='40' alt={{instance.title}}> </td>
                         <td>
-                            <button class="btn btn-primary update-btn " data-product-id={{ instance.pk }} data-bs-toggle="modal" data-bs-target="#videoModal">Edit</button>
                             <button data-product-id={{ instance.pk }} class="delete btn btn-danger">Delete</button>
                         </td>
                     </tr>
@@ -447,7 +553,7 @@
         
             $.ajax({
                 type: 'POST',
-                url: '{% url "delete" %}',
+                url: '{% url "delete_gallery" %}',
                 data: {
                     product_id: product_id,
                     csrfmiddlewaretoken: '{{ csrf_token }}',
@@ -476,6 +582,16 @@
 
       document.getElementById("see-all_orders").addEventListener("click", function () {
             var x = document.getElementById("orders-table");
+                  if (x.style.height ==="200px"){
+                  x.style.height ="auto";
+                  }
+                  else{
+                  x.style.height = "200px";
+                  }
+      });
+
+      document.getElementById("see-all_gallery").addEventListener("click", function () {
+            var x = document.getElementById("gallery-table");
                   if (x.style.height ==="200px"){
                   x.style.height ="auto";
                   }

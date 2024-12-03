@@ -177,8 +177,10 @@ def admin(request):
             available_products = Products.objects.count()
             total_orders = Orders.objects.count()
             total_customers = Customers.objects.count()
+            gallery = Gallery.objects.all()
             context = {'data':data,
                        'orders':orders,
+                       'gallery':gallery,
                        'username':request.user,
                   'available_products':available_products,
                   'total_customers':total_customers,
@@ -222,7 +224,16 @@ def delete(request):
             product = Products.objects.get(product_id=product_id)
             product.delete()
             messages.info(request,  'Product deleted successfully')
-            return render(request, 'admin.html')
+            return redirect('admin')
+
+def delete_gallery(request):
+      if request.method == 'POST':
+            product_id = request.POST['product_id']
+            print(product_id)
+            product = Gallery.objects.get(id=product_id)
+            product.delete()
+            messages.info(request,  'Product deleted successfully')
+            return redirect('admin')      
       
       
 def update(request):
@@ -299,6 +310,7 @@ def about(request):
                               }
             return render(request, 'about.html',context=context)
       else:
+            messages.info(request, "user must be authenticated to sign in")
             return render(request, 'about.html')
 
 def cart(request):
@@ -356,6 +368,7 @@ def Add_Item_to_cart(request):
                     cart_user=customer,
                     cart_product = product
                 )
+                
                 newcart.save()
                 messages.success(request, 'Product successfully added to cart')
                 return redirect('userpage')
@@ -665,5 +678,13 @@ def detail(request, pk):
       return render(request, 'preview.html', {'detail': detail})
 
 def gallery(request):
-      gallery = Gallery.objects.all()
-      return render(request, 'gallery.html', {'gallery': gallery})
+      if request.user.is_authenticated:
+            if request.method == "POST":
+                  title = request.POST['title']
+                  image = request.FILES.get('image')
+                  Gallery.objects.create(title=title, image=image,)
+                  messages.success(request, "Your Image has been Successfully uploaded")
+                  return redirect('admin')
+            
+      gallery_object = Gallery.objects.all()
+      return render(request, "gallery.html", {'gallery': gallery_object})

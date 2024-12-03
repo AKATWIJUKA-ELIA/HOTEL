@@ -5,7 +5,7 @@ conn = sqlite3.connect("db.sqlite3")
 cur = conn.cursor()
 
 
-cur.execute("DELETE FROM gold_orders")
+cur.execute("DELETE FROM gold_admin")
 conn.commit()
 conn.close()
 # import requests

@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect,get_object_or_404
-from gold.models import News_letter, Customers,Products,Orders,Cart,Admin
+from gold.models import News_letter, Customers,Products,Orders,Cart,Gallery
 from django.contrib import messages
 from django.contrib.auth import authenticate, login,logout
 from django.core import serializers
@@ -78,47 +78,71 @@ def userpage(request):
 def profile(request):
       if request.user.is_authenticated:
             email = request.user.email
+            address = request.user.address
             phone = request.user.phone_number
             user = Customers.objects.get(Customer_id=request.user.Customer_id)
             items_on_cart = Cart.objects.all().filter(cart_user_id=request.user.Customer_id).count()
             orders = Orders.objects.filter(order_user=user)
-            print(orders)
-            # product_name = order.cart.cart_product.product_name
-            # product_price = order.product_price
-            # product_description = order.product_description
-            # product_image = order.product_image
-            
+            # print(address)
             context={
                   'email':email,
+                  'address':address,
                   'phone':phone,
                   'username':request.user.username,
                   'items_on_cart':items_on_cart,
                   'orders':orders,
-                  # 'product_name':product_name,
-                  # 'product_price':product_price,
-                  # 'product_description':product_description,
-                  # 'product_image':product_image
             }
 
             return render(request, 'profile.html', context=context)
+               
+def edit_profile(request):
+      if request.user.is_authenticated:
+            if request.method == 'POST':
+                  email = request.POST['email']
+                  # print(email)
+                  phone = request.POST.get('phone')
+                  password = request.POST.get('password')
+                  address = request.POST.get("address")
+                  user = Customers.objects.get(Customer_id=request.user.Customer_id)
+                  if email == None:
+                        user.email = user.email
+                  else:
+                        user.email = email
+                  if phone == None:
+                        user.phone_number = user.phone_number
+                  else:
+                        user.phone_number = phone
+                  if password == None:
+                        user.password = user.password
+                  else:
+                        user.password = password
+                  if address == None:
+                        user.address = user.address
+                  else:
+                        user.address = address
+                  user.save()
+      return redirect('profile')
+
 
 def admin_signup(request):
       if request.method == "POST":
             username = request.POST['username']
             email = request.POST['email']
+            phone = request.POST['phone']
             password = request.POST['password']
             confirm_password = request.POST.get('confirm_password')
             if password == confirm_password:
-                  if Admin.objects.filter(username = username).exists():
+                  if Customers.objects.filter(username = username).exists():
                         messages.error(request,"Username already exists.")
                         return render(request, 'administrator/signup.html')
                   
-                  elif Admin.objects.filter(email = email).exists():
+                  elif Customers.objects.filter(email = email).exists():
                         messages.error(request,"email already exists.")
                         return render(request, 'administrator/signup.html')   
                   else:
-                        NewAdmin = Admin.objects.create(username=username,email=email,password=confirm_password)
-                        # NewAdmin.set_password(confirm_password)
+                        NewAdmin = Customers.objects.create(username=username,email=email,password=confirm_password,phone_number=phone,address="")
+                        NewAdmin.is_superuser = True
+                        NewAdmin.set_password(confirm_password)
                         NewAdmin.save()
                         
                         user = authenticate(username = username, password=password)
@@ -136,7 +160,7 @@ def admin_login(request):
             username = request.POST['username']
             password = request.POST['password']
             user = authenticate(username = username, password=password)
-            if user is not None:
+            if user is not None and user.is_superuser:
                   login(request, user)
                   return redirect('admin')
             else:
@@ -147,12 +171,18 @@ def admin_login(request):
                   
 def admin(request):
       if request.user.is_authenticated:
-            
             data = serializers.serialize("python",Products.objects.all() ) 
-            available_products = Products.objects.count() 
+            
+            orders = Orders.objects.all()
+            available_products = Products.objects.count()
+            total_orders = Orders.objects.count()
+            total_customers = Customers.objects.count()
             context = {'data':data,
+                       'orders':orders,
                        'username':request.user,
                   'available_products':available_products,
+                  'total_customers':total_customers,
+                  'total_orders':total_orders,
                   'MEDIA_URL': settings.MEDIA_URL,}
             if request.method == 'POST':
                   product_name = request.POST['product_name']
@@ -167,8 +197,24 @@ def admin(request):
                   new_product = Products.objects.create(product_name=product_name,product_cartegory=product_cartegory,product_price=price,product_description=product_description,product_image=product_image)
                   new_product.save() 
                   return redirect("admin")
-      return render(request, 'admin.html', context=context)      
-
+      return render(request, 'admin.html', context=context)
+def admin_profile(request):
+      if request.user.is_authenticated:
+            email = request.user.email
+            address = request.user.address
+            phone = request.user.phone_number
+            user = Customers.objects.get(username=request.user)
+            orders = Orders.objects.filter(order_user=user)
+            # print(address)
+            context={
+                  'email':email,
+                  'address':address,
+                  'phone':phone,
+                  'username':request.user.username,
+                  'orders':orders,
+            }
+            return render(request, 'administrator/admin_profile.html', context=context)
+      
 def delete(request):
       if request.method == 'POST':
             product_id = request.POST['product_id']
@@ -313,11 +359,8 @@ def Add_Item_to_cart(request):
                 newcart.save()
                 messages.success(request, 'Product successfully added to cart')
                 return redirect('userpage')
-        
-      #   return render(request, 'index.html')
       else:
-        messages.error(request, 'You must have an account to be able to add to cart')
-        return render(request, 'sign_in.html')
+            return render(request, 'sign_in.html')
       
       
       
@@ -452,8 +495,13 @@ def check_out(request):
                         cart = item,
                   ) for item in cart_object
             ]
-            
-            Orders.objects.bulk_create(orders)
+            for item in cart_object:
+                  if Orders.objects.filter(cart=item):
+                        # orders.remove(item)
+                        print('items already exists')
+                  else:
+                        Orders.objects.bulk_create(orders)
+                        
             
       return redirect('cart')  
                                            
@@ -615,3 +663,7 @@ def Send_email(request):
 def detail(request, pk):
       detail = Products.objects.get(product_id=pk)
       return render(request, 'preview.html', {'detail': detail})
+
+def gallery(request):
+      gallery = Gallery.objects.all()
+      return render(request, 'gallery.html', {'gallery': gallery})

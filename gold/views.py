@@ -71,10 +71,10 @@ def userpage(request):
                              'items_on_cart':items_on_cart.count(),
                               'username':request.user.username
                               }
-                   
-                   
-      # print(items_on_cart)
-      return  render(request, 'userpage.html',context=context)
+            # print(items_on_cart)
+            return  render(request, 'userpage.html',context=context)
+      else:
+            return redirect('sign_in')
 def profile(request):
       if request.user.is_authenticated:
             email = request.user.email
@@ -155,7 +155,9 @@ def admin_signup(request):
                   return render(request, 'administrator/signup.html')
       return render(request, 'administrator/signup.html')      
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
-def admin_login(request):
+def admin_login(request):  
+      
+      
       if request.method =='POST':
             username = request.POST['username']
             password = request.POST['password']
@@ -199,7 +201,10 @@ def admin(request):
                   new_product = Products.objects.create(product_name=product_name,product_cartegory=product_cartegory,product_price=price,product_description=product_description,product_image=product_image)
                   new_product.save() 
                   return redirect("admin")
-      return render(request, 'admin.html', context=context)
+            return render(request, 'admin.html', context=context)
+      else:
+            return redirect('admin-login')
+      
 def admin_profile(request):
       if request.user.is_authenticated:
             email = request.user.email
@@ -224,16 +229,7 @@ def delete(request):
             product = Products.objects.get(product_id=product_id)
             product.delete()
             messages.info(request,  'Product deleted successfully')
-            return redirect('admin')
-
-def delete_gallery(request):
-      if request.method == 'POST':
-            product_id = request.POST['product_id']
-            print(product_id)
-            product = Gallery.objects.get(id=product_id)
-            product.delete()
-            messages.info(request,  'Product deleted successfully')
-            return redirect('admin')      
+            return redirect('admin')    
       
       
 def update(request):
@@ -310,7 +306,6 @@ def about(request):
                               }
             return render(request, 'about.html',context=context)
       else:
-            messages.info(request, "user must be authenticated to sign in")
             return render(request, 'about.html')
 
 def cart(request):
@@ -376,8 +371,6 @@ def Add_Item_to_cart(request):
             return render(request, 'sign_in.html')
       
       
-      
-
 
 ###==========================================######
 #          I N C R E A S E   Q U A N T I T Y   ON  CART
@@ -625,7 +618,7 @@ def Send_email(request):
                         email_password = password
                         subject = subject
                         email_receiver = 'eliatranquil@gmail.com'
-                        body = message + sender_email
+                        body =  "{}  \n Reply to {}".format(message,sender_email)
 
                         em = EmailMessage()
                         em['from'] = server_email
@@ -637,13 +630,14 @@ def Send_email(request):
                         with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as smtp:
                               smtp.login(server_email, email_password)
                               smtp.sendmail(server_email, email_receiver, em.as_string())
-                        messages.info(request, "S U C C E S S  !", "Your Message has been Successfully sent, we will respond ASAP")
+                        messages.info(request, "S U C C E S S  !!  Your Message has been Successfully sent, we will respond ASAP")
                         return redirect('userpage')
             except Exception as e:
                   messages.error(request,'Error, Check your Internet connection and try again')
                   return redirect('userpage')       
       else:
             try:
+                  password = 'hhyx mfca zpvo ckof'
                   if request.method == "POST":
                         subject = request.POST["sub"]
                         message = request.POST["mes"]
@@ -654,7 +648,7 @@ def Send_email(request):
                         email_password = password
                         subject = subject
                         email_receiver = 'eliatranquil@gmail.com'
-                        body = message + sender_email
+                        body =  "{}  \n Reply to {}".format(message,sender_email)
 
                         em = EmailMessage()
                         em['from'] = server_email
@@ -666,9 +660,10 @@ def Send_email(request):
                         with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as smtp:
                               smtp.login(server_email, email_password)
                               smtp.sendmail(server_email, email_receiver, em.as_string())
-                        messages.info(request, "S U C C E S S  !", "Your Message has been Successfully sent, we will respond ASAP")
-                        return redirect('userpage')
+                        messages.info(request, "S U C C E S S  !!! Your Message has been Successfully sent, we will respond ASAP")
+                        render(request,'contact.html')
             except Exception as e:
+                  print(e)
                   messages.error(request,'Error, Check your Internet connection and try again')
                   return render(request,'contact.html')
       return  render(request,'contact.html')
@@ -678,13 +673,42 @@ def detail(request, pk):
       return render(request, 'preview.html', {'detail': detail})
 
 def gallery(request):
+      if request.method =="POST":
+            image = request.FILES.get('image')
+            title = request.POST['title']
+            Gallery.objects.create(title=title, image=image)
+            messages.success(request, "Image uploaded successfully")
+      return redirect('admin')
+                  
+def get_gallery(request):
       if request.user.is_authenticated:
-            if request.method == "POST":
-                  title = request.POST['title']
-                  image = request.FILES.get('image')
-                  Gallery.objects.create(title=title, image=image,)
-                  messages.success(request, "Your Image has been Successfully uploaded")
-                  return redirect('admin')
-            
-      gallery_object = Gallery.objects.all()
-      return render(request, "gallery.html", {'gallery': gallery_object})
+            try:
+                  items_on_cart =  Cart.objects.all().filter(cart_user_id=request.user.Customer_id)
+            except Cart.DoesNotExist:
+                  context = {
+                        'username':request.user.username
+                        }
+                  return  render(request, 'userpage.html',context)
+            finally:
+                  # items_on_cart = Cart.objects.count()
+                  context = {
+                             
+                              }
+            gallery_object = Gallery.objects.all()
+            Product_object = Products.objects.all()
+            print(gallery_object)
+            context ={
+            'items_on_cart':items_on_cart.count(),
+            'username':request.user.username,
+            'gallery': gallery_object,
+            'product': Product_object
+            }
+            return render(request, "gallery.html", context=context)
+      else:
+            gallery_object = Gallery.objects.all()
+            Product_object = Products.objects.all()
+            new_context = {
+            'gallery': gallery_object,
+            'product': Product_object
+            }
+            return render(request, "gallery.html", context=new_context)

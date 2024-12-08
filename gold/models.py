@@ -52,10 +52,6 @@ class Products(models.Model):
       product_price = models.DecimalField(max_digits=10, decimal_places=2)
       product_description = models.CharField(max_length=255)
       product_cartegory = models.CharField(max_length=255,default='breakfast')
-      
-class Gallery(models.Model):
-      title = models.CharField(max_length=255,default=None)
-      image = models.ImageField(upload_to='media/gallery')
 
       
 class Cart(models.Model):
@@ -98,7 +94,9 @@ class Payments(models.Model):
       payment_date = models.DateTimeField()
       Amount = models.DecimalField(decimal_places=2,max_digits=10)
       
-      
+class Gallery(models.Model):
+    image = models.ImageField(upload_to='gallery')
+    title = models.CharField(max_length=255)
       
       
             

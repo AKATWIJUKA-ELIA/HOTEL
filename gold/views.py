@@ -59,7 +59,7 @@ def userpage(request):
             except Cart.DoesNotExist:
                   context = {'data':data,
                              
-                        'username':request.user.username
+                        'username':request.user.username[:5]
                         }
                   return  render(request, 'userpage.html',context)
             finally:
@@ -69,7 +69,7 @@ def userpage(request):
                              'salad':salad,
                              'MEDIA_URL': settings.MEDIA_URL,
                              'items_on_cart':items_on_cart.count(),
-                              'username':request.user.username
+                              'username':request.user.username[:5]
                               }
             # print(items_on_cart)
             return  render(request, 'userpage.html',context=context)
@@ -88,7 +88,7 @@ def profile(request):
                   'email':email,
                   'address':address,
                   'phone':phone,
-                  'username':request.user.username,
+                  'username':request.user.username[:5],
                   'items_on_cart':items_on_cart,
                   'orders':orders,
             }
@@ -217,7 +217,7 @@ def admin_profile(request):
                   'email':email,
                   'address':address,
                   'phone':phone,
-                  'username':request.user.username,
+                  'username':request.user.username[:5],
                   'orders':orders,
             }
             return render(request, 'administrator/admin_profile.html', context=context)
@@ -254,14 +254,14 @@ def service(request):
                   items_on_cart =  Cart.objects.all().filter(cart_user_id=request.user.Customer_id)
             except Cart.DoesNotExist:
                   context = {'data':data,
-                        'username':request.user.username
+                        'username':request.user.username[:5]
                         }
                   return  render(request, 'userpage.html',context)
             finally:
                   # items_on_cart = Cart.objects.count()
                   context = {'data':data,
                              'items_on_cart':items_on_cart.count(),
-                              'username':request.user.username
+                              'username':request.user.username[:5]
                               }
             return render(request, 'service.html',context=context)
       else:
@@ -274,14 +274,14 @@ def contacts(request):
                   items_on_cart =  Cart.objects.all().filter(cart_user_id=request.user.Customer_id)
             except Cart.DoesNotExist:
                   context = {'data':data,
-                        'username':request.user.username
+                        'username':request.user.username[:5]
                         }
                   return  render(request, 'userpage.html',context)
             finally:
                   # items_on_cart = Cart.objects.count()
                   context = {'data':data,
                              'items_on_cart':items_on_cart.count(),
-                              'username':request.user.username
+                              'username':request.user.username[:5]
                               }
             return render(request, 'contact.html',context=context)
       else:
@@ -295,14 +295,14 @@ def about(request):
                   items_on_cart =  Cart.objects.all().filter(cart_user_id=request.user.Customer_id)
             except Cart.DoesNotExist:
                   context = {'data':data,
-                        'username':request.user.username
+                        'username':request.user.username[:5]
                         }
                   return  render(request, 'userpage.html',context)
             finally:
                   # items_on_cart = Cart.objects.count()
                   context = {'data':data,
                              'items_on_cart':items_on_cart.count(),
-                              'username':request.user.username
+                              'username':request.user.username[:5]
                               }
             return render(request, 'about.html',context=context)
       else:
@@ -310,7 +310,7 @@ def about(request):
 
 def cart(request):
       if request.user.is_authenticated:
-            name = request.user
+            name = request.user.username[:5]
             try:
                   user = Customers.objects.get(Customer_id=request.user.Customer_id)
                   cart_item =  Cart.objects.all().filter(cart_user=user)
@@ -555,7 +555,7 @@ def sign_in(request):
             
             if user is not None:                        
                   login(request,user)
-                  username=user.username
+                  username=user.username[:5]
                   #self.logged_in = True
                   # data = serializers.serialize("python",Products.objects.all() )
                   # context = {'data':data,
@@ -686,7 +686,7 @@ def get_gallery(request):
                   items_on_cart =  Cart.objects.all().filter(cart_user_id=request.user.Customer_id)
             except Cart.DoesNotExist:
                   context = {
-                        'username':request.user.username
+                        'username':request.user.username[5]
                         }
                   return  render(request, 'userpage.html',context)
             finally:
@@ -699,7 +699,7 @@ def get_gallery(request):
             print(gallery_object)
             context ={
             'items_on_cart':items_on_cart.count(),
-            'username':request.user.username,
+            'username':request.user.username[:5],
             'gallery': gallery_object,
             'product': Product_object
             }

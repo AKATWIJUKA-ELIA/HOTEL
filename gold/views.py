@@ -5,12 +5,15 @@ from django.contrib.auth import authenticate, login,logout
 from django.core import serializers
 from django.http import JsonResponse
 from django.db.models import Sum
+from django.db import transaction
 import requests
+import uuid
 from django.conf import settings
 import smtplib
 import ssl
 from email.message import EmailMessage
 from django.core.mail import send_mail
+import base64
 
 
 
@@ -309,6 +312,14 @@ def about(request):
             return render(request, 'about.html')
 
 def cart(request):
+      # items to sum up
+      def get_total_cart_amount():
+            total_amount = Cart.objects.filter(cart_user_id=request.user.Customer_id).aggregate(total=Sum('cart_amount'))['total']
+            return total_amount or 0
+      # print(get_total_cart_amount(request.user.Customer_id))
+      total_sum =  get_total_cart_amount()
+      print(total_sum)
+      
       if request.user.is_authenticated:
             name = request.user.username[:5]
             try:
@@ -320,13 +331,7 @@ def cart(request):
                   messages.info(request, 'your cart is empty')
                   return render(request, 'cart.html', )
                         
-            # items to sum up
-            def get_total_cart_amount():
-                  total_amount = Cart.objects.filter(cart_user_id=request.user.Customer_id).aggregate(total=Sum('cart_amount'))['total']
-                  return total_amount or 0
-            # print(get_total_cart_amount(request.user.Customer_id))
-            total_sum =  get_total_cart_amount()
-            print(total_sum)
+            
             
             
             
@@ -337,6 +342,7 @@ def cart(request):
                   'total':total_sum,
                   }
       return render(request, 'Cart.html', context=context)
+
 
 
 
@@ -437,46 +443,91 @@ def delete_from_cart(request):
 
 def payments(request):
       if request.user.is_authenticated:
+             # items to sum up
+            def get_total_cart_amount():
+                  total_amount = Cart.objects.filter(cart_user_id=request.user.Customer_id).aggregate(total=Sum('cart_amount'))['total']
+                  return total_amount or 0
+            total_sum =  get_total_cart_amount()
             name = request.user
             phone_number  = request.user.phone_number
-
-            # customer = Customers.objects.get(username=name)
-            # cart_id = request.POST['cart_id']
-            # cart_object = Cart.objects.get(cart_user_id=customer.Customer_id, cart_id=cart_id)
+            momoUser = str(uuid.uuid4())
+            # print(momoUser)
             
-            # items to sum up
-            def get_total_cart_amount():
-                  total_amount = Cart.objects.filter(cart_user_id=request.user.Customer_id).aggregate(total=Sum('Cart_amount'))['total']
-                  return total_amount or 0
-            # print(get_total_cart_amount(request.user.Customer_id))
-            total_sum =  get_total_cart_amount()
+            # CREATING API USER
+            UserHeaders = {'Accept': '*/*',
+                  'Content-Type': 'application/json',
+                  'X-Reference-Id': momoUser,
+                  'Ocp-Apim-Subscription-Key': '3edd8df4a822438297e3ef23e70c3aca',}
+            data={
+                  "providerCallbackHost": "https://webhook.site/fc2a2731-9a9b-476e-a40c-5aabf5592dd3"
+                  }
+            r = requests.post('https://sandbox.momodeveloper.mtn.com/v1_0/apiuser',json=data, headers = UserHeaders)
+            print("User Status: ", r.json)
             
-            headers = {
-                        'Accept': '*/* ',
-                        'Content-Type': 'application/json',
-                        # 'X-Reference-Id': 'e4db4465-eb94-47ea-9176-3058b36a5716',
-                        'X-Target-Environment': 'sandbox',
-                        'Authorization': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSMjU2In0.eyJjbGllbnRJZCI6ImNhZTdhYTVhLWVhOTYtNDU0ZC1hNjYxLWE0OWQ2OWNiY2MzMSIsImV4cGlyZXMiOiIyMDI0LTExLTExVDA4OjA0OjE4LjczNyIsInNlc3Npb25JZCI6IjA1MWFhMDE2LTY1Y2EtNGFjMS04ZDQzLTU5MDYyZmJkMWFjMiJ9.joApdPs-2Ry8MuFnKSX7lzvz4POhSGGCrICCUz5W2I8v2rEIUceuoIEjNqljeWPyx0axw2HHbdFfD00-75RhN1D3-DU3mskONP3HgYfYjBx93EsmHNRQymdm-XaEiaxXuHSKB32nGDq2faEHu_r9iBxaK3SX7TKy34OIsDcBZMBPWbEQ3VZHuy_9IOZBLtMEc600WwafDYyI3s-lPmk8gKTNzukzmJVnEu5ci1-7yo8VHKErL9N5CoAcxZWu8Nf5wMUuvr-E-K0VKa2wkzPZrGltDGdk7jX41hPaQSUsm8qVj7vB7Q1Gp8fqGfDgEzluBTpAxqChNbfnV-NO4VS7iA',
-                        'Ocp-Apim-Subscription-Key': '68569c86f67147ac8e254abbf94bfeb1',
+            
+            # CREATING APIKEY FOR THE CREATED USER
+            headersApi = {'Accept': '*/*',
+                 'Content-Type': 'application/json',
+                 'Ocp-Apim-Subscription-Key': '3edd8df4a822438297e3ef23e70c3aca',
                         }
+      
+            params={
+                  'X-Reference-Id': momoUser
+            }
+      
+            ApiKey = requests.post('https://sandbox.momodeveloper.mtn.com/v1_0/apiuser/{}/apikey'.format(momoUser),headers = headersApi)
+            KEY = ApiKey.text[11:-2]
+            print(KEY)
             
-            body = {
-                  "amount": "10",
-                  "currency": "EUR",
-                  "externalId": "123456",
+            # num= "04f4a2ed646845f2b0923f079d93de16"
+            
+            # CREATING ACCESS TOKEN FOR THE USER  =====> WE USE THE APIKEY AND THE USERID
+            auth_string = f"{momoUser}:{KEY}"
+            auth_b64 = base64.b64encode(auth_string.encode('utf-8')).decode('utf-8')
+            athkey = f"Basic {auth_b64}"
+            print(athkey)
+            headerstoken = {'Accept': '*/*',
+                  'Content-Type': 'application/json',
+                  'Ocp-Apim-Subscription-Key': '55d237aeb9b04db59cbeb8751f6e8df4',
+                  'Authorization': athkey,
+                  #      "apiKey":"30dae6e8bb7743d7b7b186c413ad8569"
+            }      
+            response = requests.post('https://sandbox.momodeveloper.mtn.com/collection/token/', headers = headerstoken)
+            AccessToken = response.json()
+            print(AccessToken)
+            # print(AccessToken['access_token'])
+            
+            
+            # REQUEST TO PAY 
+            transactionId = str(uuid.uuid4())
+            headersPay = {'Accept': '*/*',
+                 'Content-Type': 'application/json',
+                 'Ocp-Apim-Subscription-Key': '55d237aeb9b04db59cbeb8751f6e8df4',
+                 'Authorization':"Bearer {}".format(AccessToken['access_token']),
+                 'X-Reference-Id': transactionId,  #THIS IS FORTHE TRASACTION NOT FOR THE CREATED USER 
+            #      'X-Callback-Url': "https://webhook.site/fc2a2731-9a9b-476e-a40c-5aabf5592dd3",
+                 'X-Target-Environment': "sandbox"
+            }
+            amount = str(total_sum)
+            print(type(amount))
+            body={
+                  "amount": amount,
+                  "currency": "EUR",#code for UGX
+                  "externalId": "12345678",
                   "payer": {
                         "partyIdType": "MSISDN",
-                        "partyId": "654321"
+                        "partyId": "12345678"
                   },
-                  "payerMessage": "pay for a product",
-                  "payeeNote": "payer note"
+                  "payerMessage": "testing",
+                  "payeeNote": "testing1"
                   }
-            params={
-                  "referenceId":'c924b2b1-948d-4310-a9b7-15a6c8cfec30'
-            }
+            requestToPay = requests.post('https://sandbox.momodeveloper.mtn.com/collection/v1_0/requesttopay',json=body, headers = headersPay)
+            print(requestToPay)
             
-            r = requests.get('https://sandbox.momodeveloper.mtn.com/collection/v1_0/requesttopay/c924b2b1-948d-4310-a9b7-15a6c8cfec30', headers = headers)
-            print(r)
+           
+            # print(get_total_cart_amount(request.user.Customer_id))
+            
+            print(amount)
             
       return render(request, 'cart.html')
 
@@ -487,28 +538,30 @@ def payments(request):
 #============================================######
 def check_out(request):
       if request.user.is_authenticated:
-            name = request.user
-            customer = Customers.objects.get(username=name)
-            # cart_id = request.POST.get('cart_id')
-            # print(cart_id)
-            
-            cart_object = Cart.objects.filter(cart_user_id=request.user.Customer_id)
-            print(cart_object)
-            
-            orders = [
-                  Orders(
-                        order_user=customer,
-                        cart = item,
-                  ) for item in cart_object
-            ]
-            for item in cart_object:
-                  if Orders.objects.filter(cart=item):
-                        # orders.remove(item)
-                        print('items already exists')
-                  else:
-                        Orders.objects.bulk_create(orders)
-                        
-            
+        payments(request)
+        
+        
+        
+        customer = Customers.objects.get(username=request.user)
+        cart_objects = Cart.objects.filter(cart_user_id=request.user.Customer_id)
+        
+        with transaction.atomic():
+            for cart_item in cart_objects:
+                order, created = Orders.objects.get_or_create(
+                    order_user=customer,
+                    cart=cart_item
+                )
+                if created:
+                    print(f'New order created for cart item: {cart_item}')
+                else:
+                    print(f'Order already exists for cart item: {cart_item}')
+
+            #   # Clear the user's cart after creating orders
+            #   cart_objects.delete()
+
+        print("Checkout completed successfully")
+      else:
+        print("User is not authenticated", status=401)  
       return redirect('cart')  
                                            
 

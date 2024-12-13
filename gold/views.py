@@ -17,7 +17,7 @@ from email.message import EmailMessage
 from django.core.mail import send_mail
 import base64
 from django.utils.crypto import get_random_string
-from django.contrib.auth.hashers import make_password
+from django.http import HttpResponse
 
 
 
@@ -828,6 +828,8 @@ def ChangePassword(request):
                         customer.save()
                         messages.info(request,"password changed successfully")
                         return redirect('sign_in')
-      except customer.DoesNotExist:
-            messages.error(request, "Error, your token has expired")
+      except:
+            link = "sign_in"
+            html_content = f'<a href="{link}">Click here to sign in</a>'
+            return HttpResponse("Error, your token has expired {}".format(html_content))
       return render(request, "change_password.html")

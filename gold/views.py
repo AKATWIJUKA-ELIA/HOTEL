@@ -1,3 +1,5 @@
+from datetime import timedelta, timezone
+from django.utils.timezone import now
 from django.shortcuts import render, redirect,get_object_or_404
 from gold.models import News_letter, Customers,Products,Orders,Cart,Gallery
 from django.contrib import messages
@@ -14,6 +16,8 @@ import ssl
 from email.message import EmailMessage
 from django.core.mail import send_mail
 import base64
+from django.utils.crypto import get_random_string
+from django.contrib.auth.hashers import make_password
 
 
 
@@ -443,87 +447,90 @@ def delete_from_cart(request):
 
 def payments(request):
       if request.user.is_authenticated:
-             # items to sum up
-            def get_total_cart_amount():
-                  total_amount = Cart.objects.filter(cart_user_id=request.user.Customer_id).aggregate(total=Sum('cart_amount'))['total']
-                  return total_amount or 0
-            total_sum =  get_total_cart_amount()
-            name = request.user
-            phone_number  = request.user.phone_number
-            momoUser = str(uuid.uuid4())
-            # print(momoUser)
-            
-            # CREATING API USER
-            UserHeaders = {'Accept': '*/*',
-                  'Content-Type': 'application/json',
-                  'X-Reference-Id': momoUser,
-                  'Ocp-Apim-Subscription-Key': '3edd8df4a822438297e3ef23e70c3aca',}
-            data={
-                  "providerCallbackHost": "https://webhook.site/fc2a2731-9a9b-476e-a40c-5aabf5592dd3"
-                  }
-            r = requests.post('https://sandbox.momodeveloper.mtn.com/v1_0/apiuser',json=data, headers = UserHeaders)
-            print("User Status: ", r.json)
-            
-            
-            # CREATING APIKEY FOR THE CREATED USER
-            headersApi = {'Accept': '*/*',
-                 'Content-Type': 'application/json',
-                 'Ocp-Apim-Subscription-Key': '3edd8df4a822438297e3ef23e70c3aca',
+            try:
+                  # items to sum up
+                  def get_total_cart_amount():
+                        total_amount = Cart.objects.filter(cart_user_id=request.user.Customer_id).aggregate(total=Sum('cart_amount'))['total']
+                        return total_amount or 0
+                  total_sum =  get_total_cart_amount()
+                  name = request.user
+                  phone_number  = request.user.phone_number
+                  momoUser = str(uuid.uuid4())
+                  # print(momoUser)
+                  
+                  # CREATING API USER
+                  UserHeaders = {'Accept': '*/*',
+                        'Content-Type': 'application/json',
+                        'X-Reference-Id': momoUser,
+                        'Ocp-Apim-Subscription-Key': '3edd8df4a822438297e3ef23e70c3aca',}
+                  data={
+                        "providerCallbackHost": "https://webhook.site/fc2a2731-9a9b-476e-a40c-5aabf5592dd3"
                         }
-      
-            params={
-                  'X-Reference-Id': momoUser
-            }
-      
-            ApiKey = requests.post('https://sandbox.momodeveloper.mtn.com/v1_0/apiuser/{}/apikey'.format(momoUser),headers = headersApi)
-            KEY = ApiKey.text[11:-2]
-            print(KEY)
+                  r = requests.post('https://sandbox.momodeveloper.mtn.com/v1_0/apiuser',json=data, headers = UserHeaders)
+                  print("User Status: ", r.json)
+                  
+                  
+                  # CREATING APIKEY FOR THE CREATED USER
+                  headersApi = {'Accept': '*/*',
+                  'Content-Type': 'application/json',
+                  'Ocp-Apim-Subscription-Key': '3edd8df4a822438297e3ef23e70c3aca',
+                              }
             
-            # num= "04f4a2ed646845f2b0923f079d93de16"
+                  params={
+                        'X-Reference-Id': momoUser
+                  }
             
-            # CREATING ACCESS TOKEN FOR THE USER  =====> WE USE THE APIKEY AND THE USERID
-            auth_string = f"{momoUser}:{KEY}"
-            auth_b64 = base64.b64encode(auth_string.encode('utf-8')).decode('utf-8')
-            athkey = f"Basic {auth_b64}"
-            print(athkey)
-            headerstoken = {'Accept': '*/*',
+                  ApiKey = requests.post('https://sandbox.momodeveloper.mtn.com/v1_0/apiuser/{}/apikey'.format(momoUser),headers = headersApi)
+                  KEY = ApiKey.text[11:-2]
+                  print(KEY)
+                  
+                  # num= "04f4a2ed646845f2b0923f079d93de16"
+                  
+                  # CREATING ACCESS TOKEN FOR THE USER  =====> WE USE THE APIKEY AND THE USERID
+                  auth_string = f"{momoUser}:{KEY}"
+                  auth_b64 = base64.b64encode(auth_string.encode('utf-8')).decode('utf-8')
+                  athkey = f"Basic {auth_b64}"
+                  print(athkey)
+                  headerstoken = {'Accept': '*/*',
+                        'Content-Type': 'application/json',
+                        'Ocp-Apim-Subscription-Key': '55d237aeb9b04db59cbeb8751f6e8df4',
+                        'Authorization': athkey,
+                        #      "apiKey":"30dae6e8bb7743d7b7b186c413ad8569"
+                  }      
+                  response = requests.post('https://sandbox.momodeveloper.mtn.com/collection/token/', headers = headerstoken)
+                  AccessToken = response.json()
+                  print(AccessToken)
+                  # print(AccessToken['access_token'])
+                  
+                  
+                  # REQUEST TO PAY 
+                  transactionId = str(uuid.uuid4())
+                  headersPay = {'Accept': '*/*',
                   'Content-Type': 'application/json',
                   'Ocp-Apim-Subscription-Key': '55d237aeb9b04db59cbeb8751f6e8df4',
-                  'Authorization': athkey,
-                  #      "apiKey":"30dae6e8bb7743d7b7b186c413ad8569"
-            }      
-            response = requests.post('https://sandbox.momodeveloper.mtn.com/collection/token/', headers = headerstoken)
-            AccessToken = response.json()
-            print(AccessToken)
-            # print(AccessToken['access_token'])
-            
-            
-            # REQUEST TO PAY 
-            transactionId = str(uuid.uuid4())
-            headersPay = {'Accept': '*/*',
-                 'Content-Type': 'application/json',
-                 'Ocp-Apim-Subscription-Key': '55d237aeb9b04db59cbeb8751f6e8df4',
-                 'Authorization':"Bearer {}".format(AccessToken['access_token']),
-                 'X-Reference-Id': transactionId,  #THIS IS FORTHE TRASACTION NOT FOR THE CREATED USER 
-            #      'X-Callback-Url': "https://webhook.site/fc2a2731-9a9b-476e-a40c-5aabf5592dd3",
-                 'X-Target-Environment': "sandbox"
-            }
-            amount = str(total_sum)
-            print(type(amount))
-            body={
-                  "amount": amount,
-                  "currency": "EUR",#code for UGX
-                  "externalId": "12345678",
-                  "payer": {
-                        "partyIdType": "MSISDN",
-                        "partyId": "12345678"
-                  },
-                  "payerMessage": "testing",
-                  "payeeNote": "testing1"
+                  'Authorization':"Bearer {}".format(AccessToken['access_token']),
+                  'X-Reference-Id': transactionId,  #THIS IS FORTHE TRASACTION NOT FOR THE CREATED USER 
+                  #      'X-Callback-Url': "https://webhook.site/fc2a2731-9a9b-476e-a40c-5aabf5592dd3",
+                  'X-Target-Environment': "sandbox"
                   }
-            requestToPay = requests.post('https://sandbox.momodeveloper.mtn.com/collection/v1_0/requesttopay',json=body, headers = headersPay)
-            print(requestToPay)
-            
+                  amount = str(total_sum)
+                  print(type(amount))
+                  body={
+                        "amount": amount,
+                        "currency": "EUR",#code for UGX
+                        "externalId": "12345678",
+                        "payer": {
+                              "partyIdType": "MSISDN",
+                              "partyId": "12345678"
+                        },
+                        "payerMessage": "testing",
+                        "payeeNote": "testing1"
+                        }
+                  requestToPay = requests.post('https://sandbox.momodeveloper.mtn.com/collection/v1_0/requesttopay',json=body, headers = headersPay)
+                  print(requestToPay)
+            except :
+                  messages.error(request, "Error while checking out")
+                  return render(request, "cart.html")
            
             # print(get_total_cart_amount(request.user.Customer_id))
             
@@ -765,3 +772,62 @@ def get_gallery(request):
             'product': Product_object
             }
             return render(request, "gallery.html", context=new_context)
+      
+def ForgotPassword(request):
+      if request.method == "POST":
+            email = request.POST['email']
+            # CHECK IF THE EMAIL EXISTS
+            if Customers.objects.filter(email=email).exists():
+                  customer = Customers.objects.get(email=email)
+                  CustomerName = customer.username.capitalize()
+                  password = 'hhyx mfca zpvo ckof'
+                  server_email = 'eliaakjtrnq@gmail.com'
+                  email_password = password
+                  
+                  reset_token = get_random_string(32)
+                  customer.reset_token = reset_token
+                  customer.reset_token_expires = now() +timedelta(minutes=10)
+                  customer.save()
+                  subject = "Password Reset Email"
+                  link = "https://lightsuccess.pythonanywhere.com/reset-password?token={}".format(reset_token)
+                  email_receiver = email
+                  body =  "Hello {}  \n your password reset link is {} \n Your token will expire in 10 minutes".format(CustomerName,link)
+                  try:
+                        em = EmailMessage()
+                        em['from'] = server_email
+                        em['To'] = email_receiver
+                        em['subject'] = subject
+                        em.set_content(body)
+
+                        context = ssl.create_default_context()
+                        with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as smtp:
+                              smtp.login(server_email, email_password)
+                              smtp.sendmail(server_email, email_receiver, em.as_string())
+                  except:
+                         messages.error(request, "sorry we encoutered an error")
+                  messages.info(request, "We have sent a confirmation link to the email you provided")
+                  return redirect("sign_in")
+            else:
+                  messages.error(request, "Sorry, we could not find your email in our database")
+                  return redirect("sign_in")
+      else:
+            pass
+      
+def ChangePassword(request):
+      token = request.GET.get('token')
+      try:
+            customer = Customers.objects.get(reset_token=token, reset_token_expires__gte=now())
+            print(customer)
+            if request.method == "POST":
+                  password = request.POST['password']
+                  confirm_password = request.POST['confirm_password']
+                  if password == confirm_password:
+                        customer.set_password(confirm_password)
+                        customer.reset_token = None
+                        customer.reset_token_expires = None
+                        customer.save()
+                        messages.info(request,"password changed successfully")
+                        return redirect('sign_in')
+      except customer.DoesNotExist:
+            messages.error(request, "Error, your token has expired")
+      return render(request, "change_password.html")

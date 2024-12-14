@@ -597,8 +597,13 @@ def sign_up(request):
                         NewUser = Customers.objects.create(username=username,email=email,password=password2,phone_number=phone,address='')
                         NewUser.set_password(password2)
                         NewUser.save()
-                        messages.success(request, "Your account has been successfully created you will be redirected to the login page")
-                        return redirect('index') 
+                        messages.success(request, "Your account has been successfully created you can now log in to you account login")
+                        server_email = 'eliaakjtrnq@gmail.com'
+                        email_receiver=email
+                        subject = "WELCOME"
+                        body = f"Dear {username},\n\n Welcome to our website.\n\nBest regards,\n\nAmazima Restaurant"
+                        SendEmail(server_email,email_receiver,subject,body)
+                        return redirect('sign_in') 
             
             else:
                   messages.error(request,"Passwords do not match.")
@@ -667,7 +672,7 @@ def news_letter(request):
 def Send_email(request):
       if request.user.is_authenticated:
             try:
-                  password = 'hhyx mfca zpvo ckof'
+                  
                   if request.method == "POST":
                         subject = request.POST["sub"]
                         message = request.POST["mes"]
@@ -675,21 +680,12 @@ def Send_email(request):
 
 
                         server_email = 'eliaakjtrnq@gmail.com'
-                        email_password = password
                         subject = subject
                         email_receiver = 'eliatranquil@gmail.com'
                         body =  "{}  \n Reply to {}".format(message,sender_email)
 
-                        em = EmailMessage()
-                        em['from'] = server_email
-                        em['To'] = email_receiver
-                        em['subject'] = subject
-                        em.set_content(body)
-
-                        context = ssl.create_default_context()
-                        with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as smtp:
-                              smtp.login(server_email, email_password)
-                              smtp.sendmail(server_email, email_receiver, em.as_string())
+                        SendEmail(server_email,email_receiver,subject,body)
+                              
                         messages.info(request, "S U C C E S S  !!  Your Message has been Successfully sent, we will respond ASAP")
                         return redirect('userpage')
             except Exception as e:
@@ -697,7 +693,7 @@ def Send_email(request):
                   return redirect('userpage')       
       else:
             try:
-                  password = 'hhyx mfca zpvo ckof'
+                  
                   if request.method == "POST":
                         subject = request.POST["sub"]
                         message = request.POST["mes"]
@@ -705,21 +701,11 @@ def Send_email(request):
 
 
                         server_email = 'eliaakjtrnq@gmail.com'
-                        email_password = password
                         subject = subject
                         email_receiver = 'eliatranquil@gmail.com'
                         body =  "{}  \n Reply to {}".format(message,sender_email)
 
-                        em = EmailMessage()
-                        em['from'] = server_email
-                        em['To'] = email_receiver
-                        em['subject'] = subject
-                        em.set_content(body)
-
-                        context = ssl.create_default_context()
-                        with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as smtp:
-                              smtp.login(server_email, email_password)
-                              smtp.sendmail(server_email, email_receiver, em.as_string())
+                        SendEmail(server_email,email_receiver,subject,body)
                         messages.info(request, "S U C C E S S  !!! Your Message has been Successfully sent, we will respond ASAP")
                         render(request,'contact.html')
             except Exception as e:
@@ -780,9 +766,7 @@ def ForgotPassword(request):
             if Customers.objects.filter(email=email).exists():
                   customer = Customers.objects.get(email=email)
                   CustomerName = customer.username.capitalize()
-                  password = 'hhyx mfca zpvo ckof'
                   server_email = 'eliaakjtrnq@gmail.com'
-                  email_password = password
                   
                   reset_token = get_random_string(32)
                   customer.reset_token = reset_token
@@ -793,16 +777,7 @@ def ForgotPassword(request):
                   email_receiver = email
                   body =  "Hello {}  \n your password reset link is {} \n Your token will expire in 10 minutes".format(CustomerName,link)
                   try:
-                        em = EmailMessage()
-                        em['from'] = server_email
-                        em['To'] = email_receiver
-                        em['subject'] = subject
-                        em.set_content(body)
-
-                        context = ssl.create_default_context()
-                        with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as smtp:
-                              smtp.login(server_email, email_password)
-                              smtp.sendmail(server_email, email_receiver, em.as_string())
+                        SendEmail(server_email,email_receiver,subject,body)
                   except:
                          messages.error(request, "sorry we encoutered an error")
                   messages.info(request, "We have sent a confirmation link to the email you provided")
@@ -833,3 +808,21 @@ def ChangePassword(request):
             html_content = f'<a href="{link}">Click here to sign in</a>'
             return HttpResponse("Error, your token has expired {}".format(html_content))
       return render(request, "change_password.html")
+
+def SendEmail(server_email,email_receiver,subject,body):
+      password = 'hhyx mfca zpvo ckof'
+      email_password = password
+      em = EmailMessage()
+      em['from'] = server_email
+      em['To'] = email_receiver
+      em['subject'] = subject
+      
+      em.set_content(body)
+      
+
+      
+      context = ssl.create_default_context()
+      with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as smtp:
+            smtp.login(server_email, email_password)
+            smtp.sendmail(server_email, email_receiver, em.as_string())
+      return 0

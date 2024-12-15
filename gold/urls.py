@@ -5,6 +5,7 @@ from django.conf.urls.static import static
 
 
 urlpatterns =[
+      path('verify/', views.verify_signature,name='verify'),
     path('', views.index,name='index'),
     path('service/', views.service,name="service"),
     path('contacts/', views.contacts,name="contact"),

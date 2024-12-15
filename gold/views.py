@@ -39,6 +39,26 @@ import subprocess
 #     def add(self, product):
 #           pass
 
+import logging
+
+logger = logging.getLogger(__name__)
+
+def pull_changes():
+    try:
+        # Step 1: Reset local changes (this will discard all uncommitted changes)
+        subprocess.check_call(['git', 'reset', '--hard'])
+        logger.info("Local changes reset successfully.")
+
+        # Step 2: Pull the latest changes from the remote repository
+        output = subprocess.check_output(['git', 'pull'], stderr=subprocess.STDOUT)
+        logger.info(f"Git pull successful: {output.decode('utf-8')}")
+
+        # Step 3: Return a success response
+        return JsonResponse({"message": "Git pull successful and local changes reset!"}, status=200)
+
+    except subprocess.CalledProcessError as e:
+        logger.error(f"Git operation failed: {e.output.decode('utf-8')}")
+        return JsonResponse({"error": f"Git operation failed: {e.output.decode('utf-8')}"}, status=500)
 @csrf_exempt
 def verify_signature(request):
     secret_token = "restaurant@amazima.com"
@@ -62,11 +82,9 @@ def verify_signature(request):
             return JsonResponse({"detail": "Request signatures didn't match!"}, status=403)
 
         # If everything is valid, return a success message
-        try:
-            subprocess.call(['git', 'pull'])
-        except subprocess.CalledProcessError as e:
-            return JsonResponse({"error": f"Git pull failed: {e}"}, status=500)
+        pull_changes()
         return JsonResponse({"message": "Webhook verified successfully!"}, status=200)
+        
 
 
 
@@ -639,7 +657,7 @@ def sign_up(request):
                         messages.success(request, "Your account has been successfully created you can now log in to you account login")
                         server_email = 'eliaakjtrnq@gmail.com'
                         email_receiver=email
-                        subject = "WELCOME to Amazima Restaurant..."
+                        subject = "WELCOME to amazima restaurant.."
                         body = f"Dear {username},\n\n Welcome to our website.\n\nBest regards,\n\nAmazima Restaurant"
                         SendEmail(server_email,email_receiver,subject,body)
                         return redirect('sign_in')

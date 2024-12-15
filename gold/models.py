@@ -39,6 +39,8 @@ class Customers(AbstractBaseUser , PermissionsMixin):
       email = models.EmailField(blank=True, default=None)
       password = models.CharField(max_length=255,)
       phone_number = models.CharField(max_length=20, blank=True, default=None)
+      reset_token = models.CharField(max_length=255, blank=True, null=True)
+      reset_token_expires = models.DateTimeField(blank=True, null=True)
       address = models.CharField(max_length=255, blank=True, default=None)
       USERNAME_FIELD = 'username'  # or whatever field you want to use as the username
       REQUIRED_FIELDS = ['email', 'password','phone_number']

@@ -101,119 +101,92 @@
         
         <div class="container-fluid">
             <div class="row">
-
-                <div class="col-lg-8 col-md-6">
-                        <div class="container-fluid  mx-auto py-5">
-                              <div class="row">
-                              <div class="col text-center wow fadeInUp" data-wow-delay="0.1s">
-                                    {% if messages %}
-                                    {% for message in messages %}
-                                    <div class=" alert alert-{{message.tags }} alert-dismissible fade show" role ="alert" style= "text-align : center;background-color: rgb(171, 188, 188);">
-                                          <strong>
-                                          Info
-                                          </strong> {{ message }}
-                                          <button type ="button" class="btn-close" data-bs-dismiss="alert" aria-label="close">
-                                          
-                                          <span  aria-hidden="true"> &times;</span>
-                                          </button>
-                                    </div>
-                                    {% endfor %}
-                                    {% endif %}
-                                    <h1 class="mb-5">Your <span class="text-primary text-uppercase">Cart</span></h1>
-                              </div>
-                              </div>
-
-                              {% for instance in cart_item %}
-                               
-                              <div class="row ">
-                                    <div class="col-lg-4 col-md-6 wow  w-75 fadeInUp" data-wow-delay="0.1s">
-                              
-                                          <div class="row room-item shadow rounded overflow-hidden">
-                                                
-                                                <div class="col position-relative d-flex justify-content-center align-items-center flex-column" style="height: 200px;">
-                                                      <img class="img-fluid" src="{{ instance.cart_product.product_image.url }}" width="300" height="200" alt="food">
-                                                </div>
-            
-                                                <div class=" col p-4 mt-2">
-                                                      <div class="d-flex justify-content-between mb-3">
-                                                            <h5 class="mb-0">{{instance.cart_product.product_name}}</h5>
-                                                            <div class="ps-2">
-                                                                  <h6 class="text-truncate">
-                                                                  Ushs: {{ instance.cart_amount }}
-                                                                  </h6>
-                                                            </div>
-                                                      </div>
-                                                      {% comment %} <div class="d-flex mb-3">
-                                                            <small class="border-end me-3 pe-3"><i class="fa fa-bed text-primary me-2"></i>3 Bed</small>
-                                                            <small class="border-end me-3 pe-3"><i class="fa fa-bath text-primary me-2"></i>2 Bath</small>
-                                                            <small><i class="fa fa-wifi text-primary me-2"></i>Wifi</small>
-                                                      </div> {% endcomment %}
-                                                      <p class="text-body mb-3">{{instance.cart_product.product_description}}</p>
-                                                      <div class="d-flex gap-3 justify-content-between">
-      
-                                                            {% comment %}
-                                                              deleting an item from the cart
-                                                            {% endcomment %}
-                                                            <a  class="btn btn-sm btn-danger d-flex rounded delete  py-2 px-4 " data-cart-id={{ instance.pk }} href=""> <i  class="bi bi-trash"></i> Remove </a>
-                                                            <div   class="d-flex gap-3" >
-                                                                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-dash-square-fill reduce-cart" data-cart-id={{ instance.pk }} style="cursor: pointer;" viewBox="0 0 16 16">
-                                                                        <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm2.5 7.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1"/>
-                                                                      </svg>
-                                                                      {{ instance.quantity }}
-                                                                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-plus-square-fill add-cart" data-cart-id={{ instance.pk }} style="cursor: pointer;" viewBox="0 0 16 16">
-                                                                        <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0"/>
-                                                                      </svg>
-                                                            </div>
-                                                      </div>
-                                                </div>
-                                                
-                                          </div>
-                                          
-                                    </div>
-
-                                    
-
-                              </div>
-                              
-                              <br/>
-                              
-
-                              {% endfor %}
-                        </div>
-
-                        <br>
-                        <br>
-                        <br>
-
+    <!-- Cart Items (this will appear first on larger screens, second on small screens) -->
+    <div class="col-lg-8 col-md-6 order-2 order-md-1">
+        <div class="container-fluid mx-auto py-5">
+            <div class="row">
+                <div class="col text-center wow fadeInUp" data-wow-delay="0.1s">
+                    {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-{{message.tags}} alert-dismissible fade show" role="alert" style="text-align: center; background-color: rgb(171, 188, 188);">
+                        <strong>Info</strong> {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                    <h1 class="mb-5">Your <span class="text-primary text-uppercase">Cart</span></h1>
                 </div>
+            </div>
 
-
-
-
-
-
-                <div class="col-lg-4 col-md-6 w-25 h-25 mt-5">
-                    <div class="container">
-                        <div class="wow room-item shadow border fadeInUp " data-wow-delay="0.1s">
-                            <div class=" rounded " href="">
-                                <!-- <div class="service-icon bg-transparent border rounded p-1">
-                                    <div class="w-300 h-300 border rounded d-flex align-items-center justify-content-center">
-                                        <i class="bi bi-cart3 text-primary"></i>
-                                    </div>
-                                </div> -->
-                                <h5 class="mb-3 text-center">Cart Summary</h5>
-                                <h5 class="mb-3">Subtotal UGX : {{ total }}</h5>
+            {% for instance in cart_item %}
+            <div class="row">
+                <div class="col-lg-4 col-md-6 wow w-75 fadeInUp" data-wow-delay="0.1s">
+                    <div class="row room-item shadow rounded overflow-hidden">
+                        <div class="col position-relative d-flex justify-content-center align-items-center flex-column" style="height: 200px;">
+                            <img class="img-fluid" src="{{ instance.cart_product.product_image.url }}" width="300" height="200" alt="food">
+                        </div>
+                        <div class="col p-4 mt-2">
+                            <div class="d-flex justify-content-between mb-3">
+                                <h5 class="mb-0">{{ instance.cart_product.product_name }}</h5>
+                                <div class="ps-2">
+                                    <h6 class="text-truncate">
+                                        Ushs: {{ instance.cart_amount }}
+                                    </h6>
+                                </div>
                             </div>
-                            <button type="submit"   onclick="window.location.href='{% url 'check_out' %}'" class="btn  btn-sm btn-outline-dark px-auto hover:bg-primary rounded" style="margin-left: 100px;margin-bottom: 5px;" >check out</button>
+                            <p class="text-body mb-3">{{ instance.cart_product.product_description }}</p>
+                            <div class="d-flex gap-3 justify-content-between">
+                                <a class="btn btn-sm btn-danger d-flex rounded delete py-2 px-4" data-cart-id={{ instance.pk }} href="">
+                                    <i class="bi bi-trash"></i> Remove
+                                </a>
+                                <div class="d-flex gap-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-dash-square-fill reduce-cart" data-cart-id={{ instance.pk }} style="cursor: pointer;" viewBox="0 0 16 16">
+                                        <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm2.5 7.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1"/>
+                                    </svg>
+                                    {{ instance.quantity }}
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-plus-square-fill add-cart" data-cart-id={{ instance.pk }} style="cursor: pointer;" viewBox="0 0 16 16">
+                                        <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0"/>
+                                    </svg>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+            </div>
+            <br/>
+            {% endfor %}
+        </div>
+        <br><br><br>
+    </div>
 
-                
-
-
-
-            </div>           
+    <!-- Cart Summary (this will appear first on small screens, second on larger screens) -->
+    {% if total == 0  %}
+    <div class="col-lg-4 col-md-6  mt-5 order-1 order-md-2">
+        <div class="container">
+            <div class="wow room-item shadow border fadeInUp" data-wow-delay="0.1s">
+                <div class="rounded">
+                    <h5 class="mb-3 text-center ">Your Cart is Empty</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else  %}
+    <div class="col-lg-4 col-md-6  mt-5 order-1 order-md-2">
+        <div class="container">
+            <div class="wow room-item shadow border fadeInUp" data-wow-delay="0.1s">
+                <div class="rounded">
+                    <h5 class="mb-3 text-center ">Cart Summary</h5>
+                    <h5 class="mb-3 text-center ">Subtotal UGX: {{ total }}</h5>
+                </div>
+                <button type="submit" onclick="window.location.href='{% url 'check_out' %}'" class="btn btn-sm btn-outline-dark px-auto hover:bg-primary rounded" style="margin-left: 100px;margin-bottom: 5px;">Check Out</button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+           
         </div>
         
         </div>

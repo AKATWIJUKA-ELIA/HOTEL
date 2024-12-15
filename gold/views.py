@@ -1,3 +1,5 @@
+from datetime import timedelta, timezone
+from django.utils.timezone import now
 from django.shortcuts import render, redirect,get_object_or_404
 from gold.models import News_letter, Customers,Products,Orders,Cart,Gallery
 from django.contrib import messages
@@ -5,12 +7,17 @@ from django.contrib.auth import authenticate, login,logout
 from django.core import serializers
 from django.http import JsonResponse
 from django.db.models import Sum
+from django.db import transaction
 import requests
+import uuid
 from django.conf import settings
 import smtplib
 import ssl
 from email.message import EmailMessage
 from django.core.mail import send_mail
+import base64
+from django.utils.crypto import get_random_string
+from django.http import HttpResponse
 
 
 
@@ -59,7 +66,7 @@ def userpage(request):
             except Cart.DoesNotExist:
                   context = {'data':data,
                              
-                        'username':request.user.username
+                        'username':request.user.username[:5]
                         }
                   return  render(request, 'userpage.html',context)
             finally:
@@ -69,7 +76,7 @@ def userpage(request):
                              'salad':salad,
                              'MEDIA_URL': settings.MEDIA_URL,
                              'items_on_cart':items_on_cart.count(),
-                              'username':request.user.username
+                              'username':request.user.username[:5]
                               }
             # print(items_on_cart)
             return  render(request, 'userpage.html',context=context)
@@ -88,7 +95,7 @@ def profile(request):
                   'email':email,
                   'address':address,
                   'phone':phone,
-                  'username':request.user.username,
+                  'username':request.user.username[:5],
                   'items_on_cart':items_on_cart,
                   'orders':orders,
             }
@@ -217,7 +224,7 @@ def admin_profile(request):
                   'email':email,
                   'address':address,
                   'phone':phone,
-                  'username':request.user.username,
+                  'username':request.user.username[:5],
                   'orders':orders,
             }
             return render(request, 'administrator/admin_profile.html', context=context)
@@ -254,14 +261,14 @@ def service(request):
                   items_on_cart =  Cart.objects.all().filter(cart_user_id=request.user.Customer_id)
             except Cart.DoesNotExist:
                   context = {'data':data,
-                        'username':request.user.username
+                        'username':request.user.username[:5]
                         }
                   return  render(request, 'userpage.html',context)
             finally:
                   # items_on_cart = Cart.objects.count()
                   context = {'data':data,
                              'items_on_cart':items_on_cart.count(),
-                              'username':request.user.username
+                              'username':request.user.username[:5]
                               }
             return render(request, 'service.html',context=context)
       else:
@@ -274,14 +281,14 @@ def contacts(request):
                   items_on_cart =  Cart.objects.all().filter(cart_user_id=request.user.Customer_id)
             except Cart.DoesNotExist:
                   context = {'data':data,
-                        'username':request.user.username
+                        'username':request.user.username[:5]
                         }
                   return  render(request, 'userpage.html',context)
             finally:
                   # items_on_cart = Cart.objects.count()
                   context = {'data':data,
                              'items_on_cart':items_on_cart.count(),
-                              'username':request.user.username
+                              'username':request.user.username[:5]
                               }
             return render(request, 'contact.html',context=context)
       else:
@@ -295,22 +302,30 @@ def about(request):
                   items_on_cart =  Cart.objects.all().filter(cart_user_id=request.user.Customer_id)
             except Cart.DoesNotExist:
                   context = {'data':data,
-                        'username':request.user.username
+                        'username':request.user.username[:5]
                         }
                   return  render(request, 'userpage.html',context)
             finally:
                   # items_on_cart = Cart.objects.count()
                   context = {'data':data,
                              'items_on_cart':items_on_cart.count(),
-                              'username':request.user.username
+                              'username':request.user.username[:5]
                               }
             return render(request, 'about.html',context=context)
       else:
             return render(request, 'about.html')
 
 def cart(request):
+      # items to sum up
+      def get_total_cart_amount():
+            total_amount = Cart.objects.filter(cart_user_id=request.user.Customer_id).aggregate(total=Sum('cart_amount'))['total']
+            return total_amount or 0
+      # print(get_total_cart_amount(request.user.Customer_id))
+      total_sum =  get_total_cart_amount()
+      print(total_sum)
+      
       if request.user.is_authenticated:
-            name = request.user
+            name = request.user.username[:5]
             try:
                   user = Customers.objects.get(Customer_id=request.user.Customer_id)
                   cart_item =  Cart.objects.all().filter(cart_user=user)
@@ -320,13 +335,7 @@ def cart(request):
                   messages.info(request, 'your cart is empty')
                   return render(request, 'cart.html', )
                         
-            # items to sum up
-            def get_total_cart_amount():
-                  total_amount = Cart.objects.filter(cart_user_id=request.user.Customer_id).aggregate(total=Sum('cart_amount'))['total']
-                  return total_amount or 0
-            # print(get_total_cart_amount(request.user.Customer_id))
-            total_sum =  get_total_cart_amount()
-            print(total_sum)
+            
             
             
             
@@ -337,6 +346,7 @@ def cart(request):
                   'total':total_sum,
                   }
       return render(request, 'Cart.html', context=context)
+
 
 
 
@@ -437,46 +447,94 @@ def delete_from_cart(request):
 
 def payments(request):
       if request.user.is_authenticated:
-            name = request.user
-            phone_number  = request.user.phone_number
-
-            # customer = Customers.objects.get(username=name)
-            # cart_id = request.POST['cart_id']
-            # cart_object = Cart.objects.get(cart_user_id=customer.Customer_id, cart_id=cart_id)
-            
-            # items to sum up
-            def get_total_cart_amount():
-                  total_amount = Cart.objects.filter(cart_user_id=request.user.Customer_id).aggregate(total=Sum('Cart_amount'))['total']
-                  return total_amount or 0
-            # print(get_total_cart_amount(request.user.Customer_id))
-            total_sum =  get_total_cart_amount()
-            
-            headers = {
-                        'Accept': '*/* ',
+            try:
+                  # items to sum up
+                  def get_total_cart_amount():
+                        total_amount = Cart.objects.filter(cart_user_id=request.user.Customer_id).aggregate(total=Sum('cart_amount'))['total']
+                        return total_amount or 0
+                  total_sum =  get_total_cart_amount()
+                  name = request.user
+                  phone_number  = request.user.phone_number
+                  momoUser = str(uuid.uuid4())
+                  # print(momoUser)
+                  
+                  # CREATING API USER
+                  UserHeaders = {'Accept': '*/*',
                         'Content-Type': 'application/json',
-                        # 'X-Reference-Id': 'e4db4465-eb94-47ea-9176-3058b36a5716',
-                        'X-Target-Environment': 'sandbox',
-                        'Authorization': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSMjU2In0.eyJjbGllbnRJZCI6ImNhZTdhYTVhLWVhOTYtNDU0ZC1hNjYxLWE0OWQ2OWNiY2MzMSIsImV4cGlyZXMiOiIyMDI0LTExLTExVDA4OjA0OjE4LjczNyIsInNlc3Npb25JZCI6IjA1MWFhMDE2LTY1Y2EtNGFjMS04ZDQzLTU5MDYyZmJkMWFjMiJ9.joApdPs-2Ry8MuFnKSX7lzvz4POhSGGCrICCUz5W2I8v2rEIUceuoIEjNqljeWPyx0axw2HHbdFfD00-75RhN1D3-DU3mskONP3HgYfYjBx93EsmHNRQymdm-XaEiaxXuHSKB32nGDq2faEHu_r9iBxaK3SX7TKy34OIsDcBZMBPWbEQ3VZHuy_9IOZBLtMEc600WwafDYyI3s-lPmk8gKTNzukzmJVnEu5ci1-7yo8VHKErL9N5CoAcxZWu8Nf5wMUuvr-E-K0VKa2wkzPZrGltDGdk7jX41hPaQSUsm8qVj7vB7Q1Gp8fqGfDgEzluBTpAxqChNbfnV-NO4VS7iA',
-                        'Ocp-Apim-Subscription-Key': '68569c86f67147ac8e254abbf94bfeb1',
+                        'X-Reference-Id': momoUser,
+                        'Ocp-Apim-Subscription-Key': '3edd8df4a822438297e3ef23e70c3aca',}
+                  data={
+                        "providerCallbackHost": "https://webhook.site/fc2a2731-9a9b-476e-a40c-5aabf5592dd3"
                         }
+                  r = requests.post('https://sandbox.momodeveloper.mtn.com/v1_0/apiuser',json=data, headers = UserHeaders)
+                  print("User Status: ", r.json)
+                  
+                  
+                  # CREATING APIKEY FOR THE CREATED USER
+                  headersApi = {'Accept': '*/*',
+                  'Content-Type': 'application/json',
+                  'Ocp-Apim-Subscription-Key': '3edd8df4a822438297e3ef23e70c3aca',
+                              }
             
-            body = {
-                  "amount": "10",
-                  "currency": "EUR",
-                  "externalId": "123456",
-                  "payer": {
-                        "partyIdType": "MSISDN",
-                        "partyId": "654321"
-                  },
-                  "payerMessage": "pay for a product",
-                  "payeeNote": "payer note"
+                  params={
+                        'X-Reference-Id': momoUser
                   }
-            params={
-                  "referenceId":'c924b2b1-948d-4310-a9b7-15a6c8cfec30'
-            }
             
-            r = requests.get('https://sandbox.momodeveloper.mtn.com/collection/v1_0/requesttopay/c924b2b1-948d-4310-a9b7-15a6c8cfec30', headers = headers)
-            print(r)
+                  ApiKey = requests.post('https://sandbox.momodeveloper.mtn.com/v1_0/apiuser/{}/apikey'.format(momoUser),headers = headersApi)
+                  KEY = ApiKey.text[11:-2]
+                  print(KEY)
+                  
+                  # num= "04f4a2ed646845f2b0923f079d93de16"
+                  
+                  # CREATING ACCESS TOKEN FOR THE USER  =====> WE USE THE APIKEY AND THE USERID
+                  auth_string = f"{momoUser}:{KEY}"
+                  auth_b64 = base64.b64encode(auth_string.encode('utf-8')).decode('utf-8')
+                  athkey = f"Basic {auth_b64}"
+                  print(athkey)
+                  headerstoken = {'Accept': '*/*',
+                        'Content-Type': 'application/json',
+                        'Ocp-Apim-Subscription-Key': '55d237aeb9b04db59cbeb8751f6e8df4',
+                        'Authorization': athkey,
+                        #      "apiKey":"30dae6e8bb7743d7b7b186c413ad8569"
+                  }      
+                  response = requests.post('https://sandbox.momodeveloper.mtn.com/collection/token/', headers = headerstoken)
+                  AccessToken = response.json()
+                  print(AccessToken)
+                  # print(AccessToken['access_token'])
+                  
+                  
+                  # REQUEST TO PAY 
+                  transactionId = str(uuid.uuid4())
+                  headersPay = {'Accept': '*/*',
+                  'Content-Type': 'application/json',
+                  'Ocp-Apim-Subscription-Key': '55d237aeb9b04db59cbeb8751f6e8df4',
+                  'Authorization':"Bearer {}".format(AccessToken['access_token']),
+                  'X-Reference-Id': transactionId,  #THIS IS FORTHE TRASACTION NOT FOR THE CREATED USER 
+                  #      'X-Callback-Url': "https://webhook.site/fc2a2731-9a9b-476e-a40c-5aabf5592dd3",
+                  'X-Target-Environment': "sandbox"
+                  }
+                  amount = str(total_sum)
+                  print(type(amount))
+                  body={
+                        "amount": amount,
+                        "currency": "EUR",#code for UGX
+                        "externalId": "12345678",
+                        "payer": {
+                              "partyIdType": "MSISDN",
+                              "partyId": "12345678"
+                        },
+                        "payerMessage": "testing",
+                        "payeeNote": "testing1"
+                        }
+                  requestToPay = requests.post('https://sandbox.momodeveloper.mtn.com/collection/v1_0/requesttopay',json=body, headers = headersPay)
+                  print(requestToPay)
+            except :
+                  messages.error(request, "Error while checking out")
+                  return render(request, "cart.html")
+           
+            # print(get_total_cart_amount(request.user.Customer_id))
+            
+            print(amount)
             
       return render(request, 'cart.html')
 
@@ -487,28 +545,30 @@ def payments(request):
 #============================================######
 def check_out(request):
       if request.user.is_authenticated:
-            name = request.user
-            customer = Customers.objects.get(username=name)
-            # cart_id = request.POST.get('cart_id')
-            # print(cart_id)
-            
-            cart_object = Cart.objects.filter(cart_user_id=request.user.Customer_id)
-            print(cart_object)
-            
-            orders = [
-                  Orders(
-                        order_user=customer,
-                        cart = item,
-                  ) for item in cart_object
-            ]
-            for item in cart_object:
-                  if Orders.objects.filter(cart=item):
-                        # orders.remove(item)
-                        print('items already exists')
-                  else:
-                        Orders.objects.bulk_create(orders)
-                        
-            
+        payments(request)
+        
+        
+        
+        customer = Customers.objects.get(username=request.user)
+        cart_objects = Cart.objects.filter(cart_user_id=request.user.Customer_id)
+        
+        with transaction.atomic():
+            for cart_item in cart_objects:
+                order, created = Orders.objects.get_or_create(
+                    order_user=customer,
+                    cart=cart_item
+                )
+                if created:
+                    print(f'New order created for cart item: {cart_item}')
+                else:
+                    print(f'Order already exists for cart item: {cart_item}')
+
+            #   # Clear the user's cart after creating orders
+            #   cart_objects.delete()
+
+        print("Checkout completed successfully")
+      else:
+        print("User is not authenticated", status=401)  
       return redirect('cart')  
                                            
 
@@ -537,8 +597,13 @@ def sign_up(request):
                         NewUser = Customers.objects.create(username=username,email=email,password=password2,phone_number=phone,address='')
                         NewUser.set_password(password2)
                         NewUser.save()
-                        messages.success(request, "Your account has been successfully created you will be redirected to the login page")
-                        return redirect('index') 
+                        messages.success(request, "Your account has been successfully created you can now log in to you account login")
+                        server_email = 'eliaakjtrnq@gmail.com'
+                        email_receiver=email
+                        subject = "WELCOME"
+                        body = f"Dear {username},\n\n Welcome to our website.\n\nBest regards,\n\nAmazima Restaurant"
+                        SendEmail(server_email,email_receiver,subject,body)
+                        return redirect('sign_in') 
             
             else:
                   messages.error(request,"Passwords do not match.")
@@ -555,7 +620,7 @@ def sign_in(request):
             
             if user is not None:                        
                   login(request,user)
-                  username=user.username
+                  username=user.username[:5]
                   #self.logged_in = True
                   # data = serializers.serialize("python",Products.objects.all() )
                   # context = {'data':data,
@@ -607,7 +672,7 @@ def news_letter(request):
 def Send_email(request):
       if request.user.is_authenticated:
             try:
-                  password = 'hhyx mfca zpvo ckof'
+                  
                   if request.method == "POST":
                         subject = request.POST["sub"]
                         message = request.POST["mes"]
@@ -615,21 +680,12 @@ def Send_email(request):
 
 
                         server_email = 'eliaakjtrnq@gmail.com'
-                        email_password = password
                         subject = subject
                         email_receiver = 'eliatranquil@gmail.com'
                         body =  "{}  \n Reply to {}".format(message,sender_email)
 
-                        em = EmailMessage()
-                        em['from'] = server_email
-                        em['To'] = email_receiver
-                        em['subject'] = subject
-                        em.set_content(body)
-
-                        context = ssl.create_default_context()
-                        with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as smtp:
-                              smtp.login(server_email, email_password)
-                              smtp.sendmail(server_email, email_receiver, em.as_string())
+                        SendEmail(server_email,email_receiver,subject,body)
+                              
                         messages.info(request, "S U C C E S S  !!  Your Message has been Successfully sent, we will respond ASAP")
                         return redirect('userpage')
             except Exception as e:
@@ -637,7 +693,7 @@ def Send_email(request):
                   return redirect('userpage')       
       else:
             try:
-                  password = 'hhyx mfca zpvo ckof'
+                  
                   if request.method == "POST":
                         subject = request.POST["sub"]
                         message = request.POST["mes"]
@@ -645,21 +701,11 @@ def Send_email(request):
 
 
                         server_email = 'eliaakjtrnq@gmail.com'
-                        email_password = password
                         subject = subject
                         email_receiver = 'eliatranquil@gmail.com'
                         body =  "{}  \n Reply to {}".format(message,sender_email)
 
-                        em = EmailMessage()
-                        em['from'] = server_email
-                        em['To'] = email_receiver
-                        em['subject'] = subject
-                        em.set_content(body)
-
-                        context = ssl.create_default_context()
-                        with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as smtp:
-                              smtp.login(server_email, email_password)
-                              smtp.sendmail(server_email, email_receiver, em.as_string())
+                        SendEmail(server_email,email_receiver,subject,body)
                         messages.info(request, "S U C C E S S  !!! Your Message has been Successfully sent, we will respond ASAP")
                         render(request,'contact.html')
             except Exception as e:
@@ -686,7 +732,7 @@ def get_gallery(request):
                   items_on_cart =  Cart.objects.all().filter(cart_user_id=request.user.Customer_id)
             except Cart.DoesNotExist:
                   context = {
-                        'username':request.user.username
+                        'username':request.user.username[5]
                         }
                   return  render(request, 'userpage.html',context)
             finally:
@@ -699,7 +745,7 @@ def get_gallery(request):
             print(gallery_object)
             context ={
             'items_on_cart':items_on_cart.count(),
-            'username':request.user.username,
+            'username':request.user.username[:5],
             'gallery': gallery_object,
             'product': Product_object
             }
@@ -712,3 +758,71 @@ def get_gallery(request):
             'product': Product_object
             }
             return render(request, "gallery.html", context=new_context)
+      
+def ForgotPassword(request):
+      if request.method == "POST":
+            email = request.POST['email']
+            # CHECK IF THE EMAIL EXISTS
+            if Customers.objects.filter(email=email).exists():
+                  customer = Customers.objects.get(email=email)
+                  CustomerName = customer.username.capitalize()
+                  server_email = 'eliaakjtrnq@gmail.com'
+                  
+                  reset_token = get_random_string(32)
+                  customer.reset_token = reset_token
+                  customer.reset_token_expires = now() +timedelta(minutes=10)
+                  customer.save()
+                  subject = "Password Reset Email"
+                  link = "https://lightsuccess.pythonanywhere.com/reset-password?token={}".format(reset_token)
+                  email_receiver = email
+                  body =  "Hello {}  \n your password reset link is {} \n Your token will expire in 10 minutes".format(CustomerName,link)
+                  try:
+                        SendEmail(server_email,email_receiver,subject,body)
+                  except:
+                         messages.error(request, "sorry we encoutered an error")
+                  messages.info(request, "We have sent a confirmation link to the email you provided")
+                  return redirect("sign_in")
+            else:
+                  messages.error(request, "Sorry, we could not find your email in our database")
+                  return redirect("sign_in")
+      else:
+            pass
+      
+def ChangePassword(request):
+      token = request.GET.get('token')
+      try:
+            customer = Customers.objects.get(reset_token=token, reset_token_expires__gte=now())
+            print(customer)
+            if request.method == "POST":
+                  password = request.POST['password']
+                  confirm_password = request.POST['confirm_password']
+                  if password == confirm_password:
+                        customer.set_password(confirm_password)
+                        customer.reset_token = None
+                        customer.reset_token_expires = None
+                        customer.save()
+                        messages.info(request,"password changed successfully")
+                        return redirect('sign_in')
+      except:
+            link = "sign_in"
+            html_content = f'<a href="{link}">Click here to sign in</a>'
+            return HttpResponse("Error, your token has expired {}".format(html_content))
+      return render(request, "change_password.html")
+
+def SendEmail(server_email,email_receiver,subject,body):
+      password = 'hhyx mfca zpvo ckof'
+      email_password = password
+      em = EmailMessage()
+      em['from'] = server_email
+      em['To'] = email_receiver
+      em['subject'] = subject
+      
+      em.set_content(body)
+      
+
+      
+      context = ssl.create_default_context()
+      with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as smtp:
+            smtp.login(server_email, email_password)
+            smtp.sendmail(server_email, email_receiver, em.as_string())
+      return 0

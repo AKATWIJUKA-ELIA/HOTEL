@@ -380,7 +380,7 @@
 
       <!-- ===================== A D D I N G    TO   G A L L E R Y ========================-->
 
- <div class="modal fade bd-example-modal-lg" id="AddGalleryModal" tabindex="-1" aria-labelledby="bd-example-modal-lg" aria-hidden="true">
+      <div class="modal fade bd-example-modal-lg" id="AddGalleryModal" tabindex="-1" aria-labelledby="bd-example-modal-lg" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content rounded-0">
                     <div class="modal-header">
@@ -441,51 +441,13 @@
                     </div>
                 </div>
             </div>
-        </div>
+      </div>
 
        
 
       
 
       
-        <div class="table-responsive mt-5 rounded-3" style=" height: 200px;overflow: hidden;  transition: height 1s;"  id="orders-table">
-            <h3>ORDERS </h3>
-            <button id="see-all_orders" class="btn btn-success">see all</button>
-            <table class="table table-striped table-bordered table-hover table-dark rounded-3">
-                  <thead>
-                      <tr>
-                          <th>Order Id</th>
-                          <th>Customer</th>
-                          <th>Product name</th>
-                          <th>description</th>
-                          <th>Price</th>
-                          <th>image</th>
-                          <th>order status</th>
-                          <th>date ordered</th>
-                          <th>payment_status</th>
-                      </tr>
-                  </thead>
-                  
-                  
-                  
-                  <tbody>
-                      {% for order in orders %}
-                      <tr>
-                          <td>{{ order.pk }}</td>
-                          <td>{{order.order_user.username}}</td>
-                          <td>{{order.cart.cart_product.product_name}}</td>
-                          <td>{{order.cart.cart_product.product_description}}</td>
-                          <td>{{ order.cart.cart_product.product_price }}shs </td>
-                          <td> <img src="{{ MEDIA_URL }}{{ order.cart.cart_product.product_image }}" width='40' height='40' alt={{order.cart.cart_product.product_name}}> </td>
-                          <td>{{order.order_status}}</td>
-                          <td>{{order.order_date}}</td>
-                          <td> {{order.payment_status}} <td>
-                      </tr>
-                      {% endfor %}
-                      
-                  </tbody>
-            </table>
-      </div> 
       
        <div id="gallery-table" class="table-responsive rounded-3 mt-5" style=" height: 200px;overflow: hidden;  transition: height 0.3s;">
       <h3> Gallery </h3> 

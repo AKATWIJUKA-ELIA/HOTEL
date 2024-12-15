@@ -59,6 +59,7 @@ def pull_changes():
     except subprocess.CalledProcessError as e:
         logger.error(f"Git operation failed: {e.output.decode('utf-8')}")
         return JsonResponse({"error": f"Git operation failed: {e.output.decode('utf-8')}"}, status=500)
+  
 @csrf_exempt
 def verify_signature(request):
     secret_token = "restaurant@amazima.com"

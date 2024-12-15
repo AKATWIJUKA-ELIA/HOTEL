@@ -46,7 +46,7 @@ logger = logging.getLogger(__name__)
 def pull_changes():
     try:
         # Step 1: Reset local changes (this will discard all uncommitted changes)
-        subprocess.check_call(['git', 'reset', '--hard'])
+      #   subprocess.check_call(['git', 'reset', '--hard'])
         logger.info("Local changes reset successfully.")
 
         # Step 2: Pull the latest changes from the remote repository
@@ -59,6 +59,7 @@ def pull_changes():
     except subprocess.CalledProcessError as e:
         logger.error(f"Git operation failed: {e.output.decode('utf-8')}")
         return JsonResponse({"error": f"Git operation failed: {e.output.decode('utf-8')}"}, status=500)
+  
 @csrf_exempt
 def verify_signature(request):
     secret_token = "restaurant@amazima.com"

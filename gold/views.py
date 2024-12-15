@@ -600,7 +600,7 @@ def sign_up(request):
                         messages.success(request, "Your account has been successfully created you can now log in to you account login")
                         server_email = 'eliaakjtrnq@gmail.com'
                         email_receiver=email
-                        subject = "WELCOME"
+                        subject = "WELCOME to Amazima Restaurant"
                         body = f"Dear {username},\n\n Welcome to our website.\n\nBest regards,\n\nAmazima Restaurant"
                         SendEmail(server_email,email_receiver,subject,body)
                         return redirect('sign_in') 

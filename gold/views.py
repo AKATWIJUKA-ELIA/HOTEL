@@ -15,6 +15,7 @@ from django.conf import settings
 import smtplib
 import ssl
 from email.message import EmailMessage
+from django.core.mail import EmailMultiAlternatives
 from django.core.mail import send_mail
 import base64
 from django.utils.crypto import get_random_string
@@ -832,12 +833,17 @@ def ForgotPassword(request):
                   customer.save()
                   subject = "Password Reset Email"
                   link = "https://lightsuccess.pythonanywhere.com/reset-password?token={}".format(reset_token)
+                  content = f'<a href="{link}">Click here to Reset your password</a>'
                   email_receiver = email
-                  body =  "Hello {}  \n your password reset link is {} \n Your token will expire in 10 minutes".format(CustomerName,link)
+                  body =  "Hello {}  \n your password reset link is {} \n Your token will expire in 10 minutes".format(CustomerName,content)
                   try:
-                        SendEmail(server_email,email_receiver,subject,body)
+                        lists = [email_receiver]
+                        email = EmailMultiAlternatives(subject,body,server_email,lists,)
+                        email.attach_alternative(content, "text/html")
+                        email.send()
+                        # SendEmail(server_email,email_receiver,subject,body)
                   except:
-                         messages.error(request, "sorry we encoutered an error")
+                        messages.error(request, "sorry we encoutered an error")
                   messages.info(request, "We have sent a confirmation link to the email you provided")
                   return redirect("sign_in")
             else:
@@ -874,7 +880,7 @@ def SendEmail(server_email,email_receiver,subject,body):
       em['from'] = server_email
       em['To'] = email_receiver
       em['subject'] = subject
-
+      em.content_subtype = "html"
       em.set_content(body)
 
 

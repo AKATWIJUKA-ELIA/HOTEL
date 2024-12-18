@@ -80,6 +80,14 @@ ROOT_URLCONF = 'Golden.urls'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"  # Replace with your SMTP server
+EMAIL_PORT = 587  # Common ports: 587 (TLS), 465 (SSL), 25 (non-secure)
+EMAIL_USE_TLS = True  # True for TLS; False for SSL
+EMAIL_HOST_USER = "eliaakjtrnq@gmail.com"
+EMAIL_HOST_PASSWORD = "hhyx mfca zpvo ckof"
+
+
 
 TEMPLATES = [
     {
